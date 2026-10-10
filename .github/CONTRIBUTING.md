@@ -7,7 +7,7 @@ Thanks for helping improve FModel MCP.
 On Windows x64 with Git and the .NET 10 SDK installed:
 
 ```powershell
-git clone --recurse-submodules https://github.com/plu1337/fmodel-mcp.git
+git clone --recurse-submodules https://github.com/MayankS-Code/fmodel-mcp.git
 cd fmodel-mcp
 ./scripts/Build-Mcp.ps1
 ./scripts/Test-Mcp.ps1
@@ -30,5 +30,5 @@ game-specific problems in words or with synthetic files instead of attaching cop
 
 ## Reporting bugs and security issues
 
-Use the [issue templates](https://github.com/plu1337/fmodel-mcp/issues/new/choose) for bugs and feature
+Use the [issue templates](https://github.com/MayankS-Code/fmodel-mcp/issues/new/choose) for bugs and feature
 requests. Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).

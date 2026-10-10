@@ -13,7 +13,7 @@ existing FModel setup can be imported (see [Configuration](configuration.md#save
 ## Install a release
 
 1. Download `fmodel-mcp-<version>-win-x64.zip` and its `.sha256` file from the
-   [releases page](https://github.com/plu1337/fmodel-mcp/releases/latest).
+   [releases page](https://github.com/MayankS-Code/fmodel-mcp/releases/latest).
 2. Optionally verify the download:
 
    ```powershell
@@ -155,7 +155,7 @@ Requirements: Windows x64, Git, the [.NET 10 SDK](https://dotnet.microsoft.com/d
 and network access for the first build (it fetches the CUE4Parse submodule and NuGet packages).
 
 ```powershell
-git clone --recurse-submodules https://github.com/plu1337/fmodel-mcp.git
+git clone --recurse-submodules https://github.com/MayankS-Code/fmodel-mcp.git
 cd fmodel-mcp
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Release.ps1
 ```
