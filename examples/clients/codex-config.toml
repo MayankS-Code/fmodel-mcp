@@ -1,4 +1,4 @@
 # Add to %USERPROFILE%\.codex\config.toml. Single-quoted TOML strings keep backslashes literal.
 [mcp_servers.fmodel]
-command = 'C:\Users\<you>\AppData\Local\FModelMcp\versions\<version>-<id>\FModel.Mcp.exe'
+command = 'C:\Users\<you>\AppData\Local\FModelMcp\current\FModel.Mcp.exe'
 args = ['--config', 'C:\Users\<you>\AppData\Local\FModelMcp\config.json']

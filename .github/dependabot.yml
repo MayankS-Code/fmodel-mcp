@@ -1,0 +1,25 @@
+# Keeps NuGet packages and GitHub Actions current. CUE4Parse is pinned by release tag in
+# scripts/Initialize-Mcp.ps1 and updated manually (see docs/development.md#updating-cue4parse).
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - /FModel.Mcp
+      - /FModel.Mcp.Tests
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      nuget-minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Stay on the .NET 10 LTS line; move to a new .NET major deliberately.
+      - dependency-name: "Microsoft.*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]

@@ -8,7 +8,8 @@ profiles. See [Security](security.md#reporting).
 
 | Symptom | What to check |
 | --- | --- |
-| Tools don't appear in the client | Fully restart the client after changing its configuration. Confirm the `command` path exists: after an update it changes to a new `versions\` folder (see [Update and uninstall](installation.md#update-and-uninstall)). In Claude Code, run `claude mcp get fmodel` or `/mcp`. |
+| Tools don't appear in the client | Fully restart the client after changing its configuration. Confirm the `command` is `...\FModelMcp\current\FModel.Mcp.exe` and that the file exists. Clients set up with 1.1.1 or earlier point into a `versions\` folder; see [Update and uninstall](installation.md#update-and-uninstall). In Claude Code, run `claude mcp get fmodel` or `/mcp`. |
+| `current\ exists and is not a junction` during install | Something else created a real `current` folder in the install root. Move it elsewhere and rerun the installer. |
 | Server exits immediately | Run `FModel.Mcp.exe --config <path>` in a terminal and read the error on stderr. Common causes: invalid JSON, an unknown field name, an empty `inputRoots`, or limits outside their ranges (see [Configuration](configuration.md#fields)). |
 | Running the exe shows nothing | Normal. It waits for JSON-RPC on stdin. Use `--help` for usage, or run the [smoke test](installation.md#verify-the-installation). |
 | Client reports invalid JSON or protocol errors | The client must start `FModel.Mcp.exe` directly, not a build command or `dotnet run`, whose output would corrupt the protocol stream. |

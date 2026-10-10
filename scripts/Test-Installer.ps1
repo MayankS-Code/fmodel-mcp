@@ -28,6 +28,13 @@ try {
     # Exercise the stock Windows PowerShell host, which end users can run without installing PowerShell 7.
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installer -PackagePath $package -InstallRoot $testRoot -FModelSettingsPath $savedSettings -SkipRegistration
     if ($LASTEXITCODE -ne 0) { throw 'Fresh installation failed.' }
+    $stable = Join-Path $testRoot 'current'
+    $stableExe = Join-Path $stable 'FModel.Mcp.exe'
+    $clientPath = Join-Path $testRoot 'mcp-client.json'
+    $firstClient = Get-Content -LiteralPath $clientPath -Raw
+    if (($firstClient | ConvertFrom-Json).mcpServers.fmodel.command -ne $stableExe) { throw 'Client configuration does not use the stable current\ path.' }
+    if (!((Get-Item -LiteralPath $stable -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw 'current\ is not a junction.' }
+    $firstTarget = [IO.Path]::GetFullPath([string](Get-Item -LiteralPath $stable -Force).Target)
     $configPath = Join-Path $testRoot 'config.json'
     $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
     if (!(Test-Path -LiteralPath $config.inputRoots[0] -PathType Container)) { throw 'Default input folder was not created.' }
@@ -39,10 +46,15 @@ try {
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installer -PackagePath $package -InstallRoot $testRoot -SkipRegistration
     if ($LASTEXITCODE -ne 0) { throw 'Update installation failed.' }
     if ([Convert]::ToBase64String($before) -ne [Convert]::ToBase64String([IO.File]::ReadAllBytes($configPath))) { throw 'Update changed existing settings.' }
-    $client = Get-Content -LiteralPath (Join-Path $testRoot 'mcp-client.json') -Raw | ConvertFrom-Json
-    if (!(Test-Path -LiteralPath $client.mcpServers.fmodel.command)) { throw 'Generated MCP client configuration has no executable.' }
-    if ((Get-ChildItem -LiteralPath (Join-Path $testRoot 'versions') -Directory).Count -ne 2) { throw 'Update did not use a separate version directory.' }
-    Write-Host 'Installer checks passed: Windows PowerShell 5.1, default package path, saved-profile import without copying keys, configuration preservation, side-by-side update and client configuration.'
+    if ((Get-Content -LiteralPath $clientPath -Raw) -ne $firstClient) { throw 'Update changed the MCP client configuration; the command path must stay stable.' }
+    if (!(Test-Path -LiteralPath $stableExe -PathType Leaf)) { throw 'Stable executable path does not resolve after update.' }
+    $versions = @(Get-ChildItem -LiteralPath (Join-Path $testRoot 'versions') -Directory)
+    if ($versions.Count -ne 2) { throw 'Update did not use a separate version directory.' }
+    $secondTarget = [IO.Path]::GetFullPath([string](Get-Item -LiteralPath $stable -Force).Target)
+    if ($secondTarget -eq $firstTarget) { throw 'Update did not re-point current\ to the new version.' }
+    if ($secondTarget -notin @($versions | ForEach-Object { $_.FullName })) { throw 'current\ does not point to an installed version.' }
+    if (!(Test-Path -LiteralPath (Join-Path $firstTarget 'FModel.Mcp.exe') -PathType Leaf)) { throw 'Re-pointing current\ damaged the previous version.' }
+    Write-Host 'Installer checks passed: Windows PowerShell 5.1, saved-profile import without copying keys, configuration preservation, side-by-side update, stable current\ path unchanged across updates, previous version intact.'
 } finally {
     $resolved = [IO.Path]::GetFullPath($testRoot)
     $allowed = [IO.Path]::GetFullPath((Join-Path $repoRoot 'artifacts')) + [IO.Path]::DirectorySeparatorChar

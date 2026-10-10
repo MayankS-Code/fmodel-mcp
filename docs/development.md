@@ -27,7 +27,7 @@
 | `scripts/Build-Mcp.ps1` | Downloads and verifies the pinned CUE4Parse release if needed, applies the integrations, restores packages into `.packages\` and builds Release. |
 | `scripts/Test-Mcp.ps1` | Builds and runs the 21 tests, then the stdio protocol smoke test. Run `Build-Mcp.ps1` first, since it skips restore. |
 | `scripts/Publish-Mcp.ps1` | Publishes a self-contained win-x64 package to a new `artifacts\fmodel-mcp-<version>-win-x64*` folder, generates license notices, smoke-tests it, and writes a ZIP and `.sha256`. Prints the package folder as its last output line. |
-| `scripts/Test-Installer.ps1` | Runs the installer against a package in an isolated temporary folder: fresh install, saved-profile import without copying keys, configuration preserved on update, side-by-side versions. Defaults to the newest package for the current version. |
+| `scripts/Test-Installer.ps1` | Runs the installer against a package in an isolated temporary folder: fresh install, saved-profile import without copying keys, configuration preserved on update, side-by-side versions, and the stable `current\` junction re-pointed on update without changing the client configuration. Defaults to the newest package for the current version. |
 | `scripts/Package-Source.ps1` | Builds a source ZIP that includes the bootstrapped CUE4Parse tree. |
 | `scripts/Test-DocLinks.ps1` | Checks that relative links and `#anchors` in all Markdown files resolve. Runs in CI. |
 | `scripts/Smoke-Mcp.ps1` | Standalone protocol smoke test. `-OpenSavedGame` mounts the configured saved FModel profile, and `-AssetQuery <name>` also inspects one matching asset. Asset paths and values are not printed. |

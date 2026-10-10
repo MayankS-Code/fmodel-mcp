@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/plu1337/fmodel-mcp/security/advisories/new
+    about: Report vulnerabilities privately. Do not open a public issue.
+  - name: Installation and setup help
+    url: https://github.com/plu1337/fmodel-mcp/blob/main/docs/installation.md
+    about: Client setup for Claude Code, Claude Desktop, VS Code, Cursor and Codex.
+  - name: Troubleshooting guide
+    url: https://github.com/plu1337/fmodel-mcp/blob/main/docs/troubleshooting.md
+    about: Common problems with opening games, mappings, exports and builds.

@@ -29,7 +29,9 @@ existing FModel setup can be imported (see [Configuration](configuration.md#save
 
 The installer runs on the built-in Windows PowerShell 5.1. It:
 
-- copies the package to `%LOCALAPPDATA%\FModelMcp\versions\<version>-<id>\`;
+- copies the package to its own folder, `%LOCALAPPDATA%\FModelMcp\versions\<version>-<id>\`;
+- points `%LOCALAPPDATA%\FModelMcp\current\` at that folder, so clients always use the same path:
+  `%LOCALAPPDATA%\FModelMcp\current\FModel.Mcp.exe`;
 - creates `%LOCALAPPDATA%\FModelMcp\config.json` on first install, with an `Inputs` folder as the
   only allowed input and `Exports` as the output folder;
 - imports your saved FModel profile automatically on first install, if
@@ -56,8 +58,11 @@ cannot find Codex.
 
 Every client needs the same two values from `%LOCALAPPDATA%\FModelMcp\mcp-client.json`:
 
-- **command**: the full path to `FModel.Mcp.exe` inside `versions\<version>-<id>\`
+- **command**: `<install root>\current\FModel.Mcp.exe`, by default
+  `C:\Users\<you>\AppData\Local\FModelMcp\current\FModel.Mcp.exe`
 - **args**: `["--config", "<install root>\config.json"]`
+
+You only configure your client once: the path stays the same when you update.
 
 Print them with:
 
@@ -112,10 +117,10 @@ Any client that can launch a local stdio MCP server works. Configure it to run t
 After restarting your client, ask it to call `fmodel_capabilities`. The response lists the allowed input
 roots, the output root, limits and whether Oodle is available.
 
-To check the server without a client, run the bundled smoke test from the installed version folder:
+To check the server without a client, run the bundled smoke test:
 
 ```powershell
-cd "$env:LOCALAPPDATA\FModelMcp\versions\<version>-<id>"
+cd "$env:LOCALAPPDATA\FModelMcp\current"
 .\Smoke-Mcp.ps1 -ServerPath .\FModel.Mcp.exe -ConfigPath "$env:LOCALAPPDATA\FModelMcp\config.json"
 ```
 
@@ -123,16 +128,26 @@ Run directly, `FModel.Mcp.exe` waits silently for JSON-RPC on stdin. That is nor
 
 ## Update and uninstall
 
-To update, extract the new release and run `Install-Mcp.ps1 -SkipRegistration` again. Each version goes
-into its own `versions\` folder, so a running server is never overwritten, and your `config.json` is
-kept unchanged unless you pass new paths. Because the executable path changes with each version,
-**update your client configuration** with the new `command` from `mcp-client.json` (re-run the Claude
-Code commands above after `claude mcp remove fmodel`), then restart the client. Old version folders can
-be deleted once no client uses them.
+To update, extract the new release, run `Install-Mcp.ps1 -SkipRegistration` again, and restart your
+MCP client. Nothing else changes:
+
+- the new version goes into its own `versions\` folder, and `current\` is switched to it;
+- your client configuration keeps working, because it points at `current\FModel.Mcp.exe`;
+- `config.json` is kept unchanged unless you pass new paths;
+- a server that is running during the update keeps running from the old version until the client
+  restarts it.
+
+Old folders under `versions\` can be deleted once no client is still running them.
+
+**Upgrading from 1.1.1 or earlier:** those versions configured clients with a path inside
+`versions\<version>-<id>\`. After installing this version, change your client's `command` once to
+`...\FModelMcp\current\FModel.Mcp.exe` (for Claude Code: `claude mcp remove fmodel`, then the
+`claude mcp add` commands above).
 
 To uninstall, remove the server from your client (for example `claude mcp remove fmodel`, or
-`codex mcp remove fmodel`), then delete `%LOCALAPPDATA%\FModelMcp`. Check its `Exports` folder first if
-you want to keep exported files.
+`codex mcp remove fmodel`), close the client, then delete `%LOCALAPPDATA%\FModelMcp` in File Explorer
+or with `cmd /c rmdir /s /q "%LOCALAPPDATA%\FModelMcp"`. Check its `Exports` folder first if you want
+to keep exported files.
 
 ## Build from source
 

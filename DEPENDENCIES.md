@@ -1,6 +1,6 @@
 # Dependencies and compatibility
 
-This project is FModel MCP 1.1.2. Versions below are pinned; no floating package ranges are used.
+This project is FModel MCP 1.2.0. Versions below are pinned; no floating package ranges are used.
 
 ## Runtime and build
 
