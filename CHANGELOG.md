@@ -2,46 +2,69 @@
 
 ## 1.2.0
 
-- **Stable executable path:** the installer now maintains `current\FModel.Mcp.exe`, a junction to the newest version. Client configuration stays the same across updates; clients set up with 1.1.1 or earlier need their `command` changed once.
-- The server version is read from the project file instead of being hardcoded in two places.
-- CUE4Parse is now a git submodule pinned to release `1.2.2.202610`, replacing the ZIP download and manual checksum. Clone with `--recurse-submodules`; the build also initializes it automatically.
-- Repository layout: sources in `src/`, tests in `tests/`, contributing and security policy in `.github/`, dependency notes in `docs/dependencies.md`. `setup.bat` is replaced by `scripts/Setup-Release.ps1`.
-- GitHub: structured bug and feature forms, private security reporting link, pull request checklist, and Dependabot for NuGet and Actions.
+FModel MCP lets AI assistants explore Unreal Engine game archives through the Model Context Protocol:
+open PAK/IoStore archives, browse and search assets, inspect packages and properties, preview textures,
+decompile Blueprints to pseudocode, and export textures, meshes, animations, audio and worlds. It works
+with Claude Desktop, Claude Code, VS Code, Cursor, Codex and any other MCP client.
 
-- Pinned CUE4Parse to its latest release tag, `1.2.2.202610` (USMAP v5 support), and retained the MCP output-path safety integration.
-- Fixed a clean-checkout bootstrap failure: the `Microsoft.Bcl.Memory` integration step now inserts the package version instead of replacing a line that does not exist upstream.
-- Verified MCP protocol 2026-07-28 with the official C# SDK client in the test suite; the stdio smoke test continues to cover 2025-11-25 clients.
-- Updated the .NET hosting and test dependencies; migrated the test project to the maintained xUnit v3 line (4.0.2).
-- Replaced the game-specific smoke check with a generic `-AssetQuery` option.
-- Fixed the release workflow: it now runs tests, publishes the Windows package, verifies the installer and uses only the current version's changelog section as release notes. CI no longer hardcodes the version.
-- Added repeatable build, test, publish, and Windows setup entry points with side-by-side release outputs.
-- Restructured documentation: a short README with guides in `docs/` (installation, configuration, tool reference, troubleshooting, security, development, releasing, architecture), and configuration templates for Claude Desktop, Claude Code, VS Code, Cursor and Codex in `examples/`.
-- The installer now prints the exact client command and arguments and links to setup instructions for any MCP client, instead of Codex-only guidance.
-- Added a documentation link check to CI.
+### Install
+
+1. Download `fmodel-mcp-1.2.0-win-x64.zip` below and extract it. The .NET runtime is included.
+2. In the extracted folder, run
+   `powershell -NoProfile -ExecutionPolicy Bypass -File .\Install-Mcp.ps1 -SkipRegistration`.
+3. Add the server to your MCP client: see the
+   [installation guide](https://github.com/MayankS-Code/fmodel-mcp/blob/main/docs/installation.md#connect-your-mcp-client).
+
+Requires Windows x64. Verify the download against `fmodel-mcp-1.2.0-win-x64.zip.sha256`.
+
+### Highlights
+
+- **Stable executable path.** Clients now launch `%LOCALAPPDATA%\FModelMcp\current\FModel.Mcp.exe`,
+  which always points to the newest installed version. Updating is just "run the installer, restart the
+  client"; an update never disturbs a server that is running.
+- **Latest parser.** CUE4Parse release `1.2.2.202610`, including USMAP v5 mapping support.
+- **Current MCP protocol.** Verified with protocol revision 2026-07-28, while still supporting
+  2025-11-25 clients.
+- **Setup for every major client.** Step-by-step guides and ready-made configuration templates for
+  Claude Desktop, Claude Code, VS Code, Cursor and Codex.
+
+### Changes
+
+- The installer prints the exact client command and arguments, with a link to setup instructions for
+  any MCP client.
+- New documentation: installation, configuration, tool reference for all 34 tools, troubleshooting,
+  security, development and releasing guides.
+- The reported server version now always matches the release.
+- Updated .NET hosting and test dependencies.
+
+### Fixes
+
+- Building from a clean checkout no longer fails while preparing the CUE4Parse dependency.
+- The release pipeline now runs the full test suite and installer checks before publishing.
+
+### Upgrading from 1.1.1
+
+Run the new installer. Then change your MCP client's `command` **once** to
+`%LOCALAPPDATA%\FModelMcp\current\FModel.Mcp.exe` (see
+[Update and uninstall](https://github.com/MayankS-Code/fmodel-mcp/blob/main/docs/installation.md#update-and-uninstall)).
+Future updates need no client changes. Your `config.json` is kept.
+
+### Known issues
+
+- Release files are not code-signed, so Windows SmartScreen may warn on first run.
+- A CUE4Parse dependency (ImageSharp 3.1.12) has published advisories; exposure is limited and explained
+  in the [security guide](https://github.com/MayankS-Code/fmodel-mcp/blob/main/docs/security.md#known-dependency-advisories).
+
+### Files
+
+| File | Contents |
+| --- | --- |
+| `fmodel-mcp-1.2.0-win-x64.zip` | Self-contained Windows x64 server, installer, documentation and licenses |
+| `fmodel-mcp-1.2.0-source.zip` | Complete source including the pinned CUE4Parse release (builds without Git) |
+| `*.sha256` | SHA-256 checksums |
 
 ## 1.1.1
 
 - Fixed inline texture previews sending raw PNG bytes where MCP requires base64 text. Images now display correctly in MCP clients.
 - Added a regression test that opens a real Unreal texture through the official stdio MCP client and validates the received PNG encoding and dimensions.
 - Full-resolution texture file exports and saved FModel profile integration remain available.
-
-## 1.1.0
-
-- Added saved-game discovery and one-command opening from FModel's local settings (34 tools total).
-- Fresh installs reuse the selected game folder, mapping cache and existing Oodle library when available.
-- Existing installations can connect with `Install-Mcp.ps1 -ImportFModel`.
-- Saved AES keys are read in process without copying them into MCP configuration or tool arguments.
-- Added tests for saved encrypted games, key redaction, mapping ambiguity, settings refresh and access boundaries.
-- Saved-game discovery reflects saved settings; it does not control the desktop UI or fetch remote keys/mappings.
-
-## 1.0.0
-
-- Initial local stdio MCP server with 32 tools, four resources/resource templates, and four prompts.
-- Archive mounting, explicit game profiles, AES keys, mappings, browsing, registry and localization search.
-- Package properties, references, Blueprint pseudocode and inline texture previews.
-- Background raw/JSON/converted/audio export jobs with cancellation and result manifests.
-- Bounded input/output handling and per-session concurrency control.
-- Windows x64 self-contained release with Codex/ChatGPT desktop installer.
-- Automated tests against real Unreal PAK/IoStore fixtures and the official MCP client.
-
-Game-specific and optional codec support remains dependent on CUE4Parse; see the tool guide.
