@@ -4,7 +4,6 @@
 .packages/
 .dotnet/
 CUE4Parse/
-CUE4Parse-candidate/
 artifacts/
 Exports/
 *.local.json
