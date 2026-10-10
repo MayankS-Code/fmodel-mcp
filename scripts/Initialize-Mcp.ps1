@@ -3,8 +3,8 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'Common.ps1')
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $dependencyRoot = Join-Path $repoRoot 'CUE4Parse'
-$revision = '06a23e83060fb6c168243318c72bb2080b5c4d82'
-$expectedHash = '07E2D6BF79BED53F7472D5A8D891AC5F0B5361F8473913F284B933E05D2BE160'
+$revision = 'ed9897a1a3a8dba84a4b6d2119846e0502d74f19'
+$expectedHash = 'BE5FAC2BE22E56470D1EEA26267DAA6AEA54D176096F6EDCFE558E839FC2CBC1'
 
 if (!(Test-Path -LiteralPath (Join-Path $dependencyRoot 'CUE4Parse/CUE4Parse.csproj'))) {
     if ((Test-Path -LiteralPath $dependencyRoot) -and (Get-ChildItem -LiteralPath $dependencyRoot -Force | Measure-Object).Count -gt 0) {
@@ -50,7 +50,7 @@ Add-SourceIntegration $sessionPath 'public Func<string, string>? OutputPathValid
 $anchor = "        var fullPath = Path.Combine(BaseDirectory.FullName, savePath) + nameSuffix + '.' + ext.ToLower();"
 Add-SourceIntegration $sessionPath 'OutputPathValidator?.Invoke(fullPath)' $anchor ($anchor + "`n        fullPath = OutputPathValidator?.Invoke(fullPath) ?? fullPath;")
 Add-SourceIntegration 'CUE4Parse/CUE4Parse.csproj' 'Include="Microsoft.Bcl.Memory"' '    <PackageReference Include="Newtonsoft.Json" />' "    <PackageReference Include=`"Newtonsoft.Json`" />`n    <PackageReference Include=`"Microsoft.Bcl.Memory`" />"
-Add-SourceIntegration 'Directory.Packages.props' 'Microsoft.Bcl.Memory" Version="10.0.12' '    <PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.10" />' '    <PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.12" />'
+Add-SourceIntegration 'Directory.Packages.props' 'Microsoft.Bcl.Memory" Version="10.0.12' "  </PropertyGroup>`n  <ItemGroup>`n" "  </PropertyGroup>`n  <ItemGroup>`n    <PackageVersion Include=`"Microsoft.Bcl.Memory`" Version=`"10.0.12`" />`n"
 Add-SourceIntegration 'Directory.Packages.props' 'System.IO.Hashing" Version="10.0.12' '    <PackageVersion Include="System.IO.Hashing" Version="10.0.8" />' '    <PackageVersion Include="System.IO.Hashing" Version="10.0.12" />'
 Add-SourceIntegration 'Directory.Packages.props' 'System.Numerics.Tensors" Version="10.0.12' '    <PackageVersion Include="System.Numerics.Tensors" Version="10.0.10" />' '    <PackageVersion Include="System.Numerics.Tensors" Version="10.0.12" />'
 Write-Host 'CUE4Parse MCP integrations are ready.'

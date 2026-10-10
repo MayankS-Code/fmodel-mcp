@@ -6,7 +6,7 @@ Not affiliated with or endorsed by FModel, CUE4Parse, Epic Games, or OpenAI.
 
 FModel: Copyright FModel contributors, GPL-3.0.
 CUE4Parse: Copyright CUE4Parse contributors, Apache-2.0.
-Pinned CUE4Parse revision: 2bcceaf7bf129e4a52bc36d0a174dd3efb5fbfe0
+Pinned CUE4Parse revision: ed9897a1a3a8dba84a4b6d2119846e0502d74f19
 Source: https://github.com/FabianFG/CUE4Parse
 
 CUE4Parse integrations are applied by scripts/Initialize-Mcp.ps1:
