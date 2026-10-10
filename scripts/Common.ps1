@@ -45,6 +45,23 @@ function Get-ProjectVersion([string]$RepositoryRoot) {
     return [string]$project.Project.PropertyGroup.Version
 }
 
+# Newest released .NET runtime for the server's target framework (e.g. net10.0 -> channel 10.0), read from
+# Microsoft's official release metadata, so releases always bundle the latest patched runtime.
+function Get-LatestDotNetRuntime([string]$RepositoryRoot) {
+    [xml]$project = Get-Content -LiteralPath (Get-ServerProject $RepositoryRoot) -Raw
+    $framework = [string]$project.Project.PropertyGroup.TargetFramework
+    if ($framework -notmatch '^net(\d+\.\d+)$') { throw "Unexpected TargetFramework '$framework' in the server project." }
+    $channel = $Matches[1]
+    try {
+        $metadata = Invoke-RestMethod -Uri "https://builds.dotnet.microsoft.com/dotnet/release-metadata/$channel/releases.json" -TimeoutSec 60
+    } catch {
+        throw "Could not read the .NET $channel release feed to find the latest runtime ($($_.Exception.Message)). Check network access, or pass -RuntimeVersion to Publish-Mcp.ps1."
+    }
+    $version = [string]$metadata.'latest-runtime'
+    if ($version -notmatch ('^' + [regex]::Escape($channel) + '\.\d+$')) { throw "The .NET release feed returned an unexpected runtime version '$version' for channel $channel." }
+    return $version
+}
+
 function Get-UniquePath([string]$BasePath) {
     if (!(Test-Path -LiteralPath $BasePath)) { return $BasePath }
     for ($index = 2; $index -lt 1000; $index++) {

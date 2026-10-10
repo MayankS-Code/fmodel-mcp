@@ -6,7 +6,7 @@ This project is FModel MCP 1.2.0. Versions below are pinned; no floating package
 
 - Target framework: `net10.0`, Windows x64. The target is intentionally retained: .NET 10 is an LTS release supported by Microsoft through November 2028 ([lifecycle](https://learn.microsoft.com/dotnet/core/releases-and-support)).
 - SDK: .NET 10 SDK. `global.json` selects 10.0.100 with `latestFeature` roll-forward. A newer compatible .NET 10 feature-band SDK may be selected; a different major SDK is not.
-- Published app: self-contained for Windows x64 (`--self-contained true`, bundling the .NET 10 runtime). Target systems do not require a separate .NET installation.
+- Published app: self-contained for Windows x64 (`--self-contained true`, bundling the .NET 10 runtime). Target systems do not require a separate .NET installation. `Publish-Mcp.ps1` bundles the newest released .NET 10 runtime patch at publish time (from Microsoft's release feed), so each release picks up runtime security fixes without manual changes.
 - `Microsoft.Extensions.Hosting` 10.0.12 (MIT); `ModelContextProtocol` 2.2.0 (Apache-2.0).
 
 ## Unreal parsing

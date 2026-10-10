@@ -2,6 +2,9 @@
 param(
     [string]$PackagePath,
     [string]$OutputDirectory,
+    # Bundled .NET runtime version. Defaults to the newest released patch for the target framework;
+    # pass an exact version (e.g. 10.0.12) to reproduce an earlier build.
+    [string]$RuntimeVersion,
     [switch]$SkipSmoke
 )
 
@@ -11,6 +14,9 @@ Assert-WindowsX64
 $repoRoot = Get-RepositoryRoot
 $dotnet = Resolve-DotNet $repoRoot
 $version = Get-ProjectVersion $repoRoot
+if (!$RuntimeVersion) { $RuntimeVersion = Get-LatestDotNetRuntime $repoRoot }
+if ($RuntimeVersion -notmatch '^\d+\.\d+\.\d+$') { throw "Invalid -RuntimeVersion '$RuntimeVersion'; expected a version such as 10.0.12." }
+Write-Host "Bundling .NET runtime $RuntimeVersion"
 if (!$PackagePath) { $PackagePath = Join-Path $repoRoot '.packages' }
 $PackagePath = [IO.Path]::GetFullPath($PackagePath)
 if (!$OutputDirectory) {
@@ -28,7 +34,7 @@ try {
     New-Item -ItemType Directory -Path $OutputDirectory | Out-Null
     $created = $true
     Invoke-DotNet $dotnet @('publish', $project, '-c', 'Release', '-r', 'win-x64', '--self-contained', 'true', '-o', $OutputDirectory,
-        '-m:1', '-nr:false', '-p:CUE4PARSE_SKIP_NATIVE=true', '-p:RuntimeFrameworkVersion=10.0.12', '-p:DebugType=None', '-p:DebugSymbols=false', "-p:RestorePackagesPath=$PackagePath") 'Self-contained publish failed'
+        '-m:1', '-nr:false', '-p:CUE4PARSE_SKIP_NATIVE=true', "-p:RuntimeFrameworkVersion=$RuntimeVersion", '-p:DebugType=None', '-p:DebugSymbols=false', "-p:RestorePackagesPath=$PackagePath") 'Self-contained publish failed'
     $executable = Join-Path $OutputDirectory 'FModel.Mcp.exe'
     if (!(Test-Path -LiteralPath $executable -PathType Leaf)) { throw "Publish completed without the expected executable: $executable" }
 
@@ -52,7 +58,7 @@ try {
     [IO.Compression.ZipFile]::CreateFromDirectory($OutputDirectory, $zipPath, [IO.Compression.CompressionLevel]::Optimal, $false)
     $hash = (Get-Sha256Checksum $zipPath).ToLowerInvariant()
     [IO.File]::WriteAllText(($zipPath + '.sha256'), "$hash  $([IO.Path]::GetFileName($zipPath))`n", [Text.UTF8Encoding]::new($false))
-    Write-Host "Published self-contained Windows x64 executable (.NET runtime 10.0.12): $executable"
+    Write-Host "Published self-contained Windows x64 executable (.NET runtime $RuntimeVersion): $executable"
     Write-Host "Release ZIP: $zipPath"
     Write-Host "SHA-256: $hash"
     Write-Output $OutputDirectory

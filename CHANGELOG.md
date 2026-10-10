@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Release packages now bundle the newest released .NET runtime patch automatically, instead of a fixed version, so runtime security fixes are included without manual changes. `Publish-Mcp.ps1 -RuntimeVersion <x.y.z>` pins an exact version.
+
 ## 1.2.0
 
 > This release is a modified and updated version of [plu1337/fmodel-mcp](https://github.com/plu1337/fmodel-mcp)
