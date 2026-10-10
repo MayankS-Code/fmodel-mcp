@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.2
+
+- Updated the pinned CUE4Parse source to the USMAP v5-capable upstream revision and retained the MCP output-path safety integration.
+- Updated the .NET hosting and test dependencies; migrated the test project to the maintained xUnit v3 line.
+- Added repeatable build, test, publish, and Windows setup entry points with side-by-side release outputs.
+- Expanded dependency, installation, troubleshooting, and security documentation.
+
 ## 1.1.1
 
 - Fixed inline texture previews sending raw PNG bytes where MCP requires base64 text. Images now display correctly in MCP clients.

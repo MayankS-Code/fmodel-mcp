@@ -6,9 +6,9 @@ and four guided workflow prompts. It runs independently of the WPF application u
 
 ## Build and connect
 
-Source-build requirements: **Windows x64, .NET 10 SDK, PowerShell 7**, and internet access for the initial
-dependency restore. Published release ZIPs include the .NET runtime and an installer compatible with
-Windows PowerShell 5.1. See the [installation guide](../README.md#install-in-codex--chatgpt-desktop).
+Source-build requirements: **Windows x64, Git, .NET 10 SDK, PowerShell 5.1 or later**, and network
+access for the initial pinned-source/package restore. Published release ZIPs are self-contained
+for Windows x64 and bundle the .NET runtime. See the [installation guide](../README.md#build-and-test).
 A GPU, Unreal Editor, and an open FModel window are unnecessary.
 
 From the repository root:
@@ -18,9 +18,9 @@ From the repository root:
 ```
 
 This initializes the missing CUE4Parse source dependency when necessary, checks its download checksum,
-applies the small host integrations, runs the tests, publishes to `artifacts/fmodel-mcp`, and smoke-tests
-the published executable over MCP (including graceful shutdown).
-`-SkipTests` is available for subsequent local packaging. Keep the complete published directory together.
+and applies idempotent host integrations. Then run `Test-Mcp.ps1` for the 21-test executable suite and
+stdio smoke test, and `Publish-Mcp.ps1` for a new versioned package under `artifacts/`. Existing output
+is preserved; keep the complete published directory together.
 
 Copy `examples/fmodel-mcp.config.json` to `fmodel-mcp.local.json` and edit the allowed game/mapping roots:
 
@@ -50,8 +50,8 @@ generic example; substitute actual absolute paths:
 {
   "mcpServers": {
     "fmodel": {
-      "command": "C:/path/to/fmodel-mcp/artifacts/fmodel-mcp/FModel.Mcp.exe",
-      "args": ["--config", "C:/path/to/fmodel-mcp/fmodel-mcp.local.json"]
+      "command": "C:/path/to/fmodel-mcp/artifacts/fmodel-mcp-1.1.2-win-x64/FModel.Mcp.exe",
+      "args": ["--config", "C:/path/to/FModelMcp/config.json"]
     }
   }
 }
@@ -260,11 +260,11 @@ game modification are not exposed. These boundaries are advertised rather than r
 ## Validation
 
 ```powershell
-dotnet test FModel.Mcp.Tests/FModel.Mcp.Tests.csproj -m:1 -nr:false -p:CUE4PARSE_SKIP_NATIVE=true
+powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-Mcp.ps1
 ./scripts/Smoke-Mcp.ps1
 ```
 
-The 20 tests use the pinned upstream UE5.8 PAK/IoStore fixtures and an independently generated encrypted PAK.
+The 21 tests use the pinned upstream UE5.8 PAK/IoStore fixtures and an independently generated encrypted PAK.
 They exercise official-SDK stdio discovery/tool calls/resources, mappings, localization, registry search,
 package inspection, Blueprint pseudocode, inline PNGs, raw payloads, JSON/audio/texture/mesh/skeleton/USD
 world exports, partial failures, pagination, cancellation, and path restrictions. This does not certify

@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "fmodel": {
-      "command": "C:/path/to/fmodel-mcp/artifacts/fmodel-mcp/FModel.Mcp.exe",
-      "args": ["--config", "C:/path/to/fmodel-mcp/examples/fmodel-mcp.config.json"]
+      "command": "C:/Tools/FModelMcp/FModel.Mcp.exe",
+      "args": ["--config", "C:/Users/<you>/AppData/Local/FModelMcp/config.json"]
     }
   }
 }

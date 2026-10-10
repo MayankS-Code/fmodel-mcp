@@ -1,8 +1,9 @@
-param()
+param([string]$PackagePath)
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $testRoot = Join-Path $repoRoot ('artifacts/installer-test-' + [Guid]::NewGuid().ToString('N'))
-$package = Join-Path $repoRoot 'artifacts/fmodel-mcp'
+if (!$PackagePath) { $PackagePath = Join-Path $repoRoot 'artifacts/fmodel-mcp' }
+$package = [IO.Path]::GetFullPath($PackagePath)
 $installer = Join-Path $package 'Install-Mcp.ps1'
 New-Item -ItemType Directory -Path $testRoot | Out-Null
 try {
@@ -17,7 +18,7 @@ try {
         AesKeys = @{ mainKey = $fixtureKey }; Endpoints = @(@{}, @{})
     } } } | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $savedSettings -Encoding utf8
     # Exercise the stock Windows PowerShell host, which end users can run without installing PowerShell 7.
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installer -InstallRoot $testRoot -FModelSettingsPath $savedSettings -SkipRegistration
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installer -PackagePath $package -InstallRoot $testRoot -FModelSettingsPath $savedSettings -SkipRegistration
     if ($LASTEXITCODE -ne 0) { throw 'Fresh installation failed.' }
     $configPath = Join-Path $testRoot 'config.json'
     $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json

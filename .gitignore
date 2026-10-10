@@ -2,10 +2,15 @@
 **/obj/
 **/builddir/
 .packages/
+.dotnet/
 CUE4Parse/
+CUE4Parse-candidate/
 artifacts/
 Exports/
 *.local.json
+test-config.json
+test-outputs/
+Validate-Game.ps1
 *.user
 .vs/
 .idea/

@@ -17,9 +17,15 @@ jobs:
       - name: Build, test and package
         shell: pwsh
         run: ./scripts/Build-Mcp.ps1
+      - name: Unit tests and MCP protocol smoke
+        shell: pwsh
+        run: ./scripts/Test-Mcp.ps1
+      - name: Publish versioned package
+        shell: pwsh
+        run: ./scripts/Publish-Mcp.ps1
       - name: Check installer and update preservation
         shell: pwsh
-        run: ./scripts/Test-Installer.ps1
+        run: ./scripts/Test-Installer.ps1 -PackagePath ./artifacts/fmodel-mcp-1.1.2-win-x64
       - uses: actions/upload-artifact@v4
         with:
           name: fmodel-mcp-win-x64
