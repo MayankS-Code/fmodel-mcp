@@ -14,13 +14,13 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - name: Check documentation links
         shell: pwsh
         run: ./scripts/Test-DocLinks.ps1
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
       - name: Bootstrap CUE4Parse and build
@@ -34,7 +34,7 @@ jobs:
         run: |
           $package = ./scripts/Publish-Mcp.ps1 | Select-Object -Last 1
           ./scripts/Test-Installer.ps1 -PackagePath $package
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: fmodel-mcp-win-x64
           path: |
