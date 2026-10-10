@@ -54,9 +54,9 @@ profiles. See [Security](security.md#reporting).
 | --- | --- |
 | `.NET 10 SDK was not found` | Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), reopen PowerShell, and rerun. Or run `scripts\Setup-Release.ps1 -InstallPrerequisites`. |
 | `A compatible .NET SDK was not found` when running `dotnet` by hand | `global.json` requires a .NET 10 SDK. Install one, or use the scripts, which also find a repository-local `.dotnet\` SDK. |
-| `CUE4Parse archive checksum mismatch` | The download was corrupted, or GitHub changed the archive. Delete `CUE4Parse\` and retry. If it persists, open an issue. |
-| `CUE4Parse is nonempty but incomplete` | A previous bootstrap was interrupted. Delete the `CUE4Parse\` folder and rebuild. |
-| `Unsupported CUE4Parse revision: expected source anchor missing` | The CUE4Parse source doesn't match the pinned release. Delete `CUE4Parse\` so the pinned release is downloaded again. |
+| `CUE4Parse is missing` | You downloaded GitHub's "Download ZIP", which excludes submodules. Clone with `git clone --recurse-submodules`, or use the source ZIP attached to a release. |
+| `git submodule update failed` | Check network access to github.com, then rerun. |
+| `Unsupported CUE4Parse revision: expected source anchor missing` | The `CUE4Parse\` checkout isn't the pinned release. Run `git submodule update --init --force` and rebuild. |
 | NuGet restore fails | Check network access and disk space, then rerun `scripts\Build-Mcp.ps1`. |
 | ImageSharp `NU1902`/`NU1903` warnings | Expected. This is a known advisory in a CUE4Parse dependency; see [Security](security.md#known-dependency-advisories). |
 | Hundreds of compiler warnings | Expected. They come from the CUE4Parse projects; the MCP projects build cleanly. |

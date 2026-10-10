@@ -1,0 +1,5 @@
+[submodule "CUE4Parse"]
+	path = CUE4Parse
+	url = https://github.com/FabianFG/CUE4Parse.git
+	# scripts/Initialize-Mcp.ps1 applies small host integrations inside the submodule after checkout.
+	ignore = dirty
