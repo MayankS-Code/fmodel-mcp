@@ -3,8 +3,9 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'Common.ps1')
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $dependencyRoot = Join-Path $repoRoot 'CUE4Parse'
-$revision = 'ed9897a1a3a8dba84a4b6d2119846e0502d74f19'
-$expectedHash = 'BE5FAC2BE22E56470D1EEA26267DAA6AEA54D176096F6EDCFE558E839FC2CBC1'
+# CUE4Parse release tag 1.2.2.202610 (matches the NuGet package of the same version).
+$revision = '1e3293d4b3ecaf6ef3d73641b9ffe47fa4cf1562'
+$expectedHash = '528B6EFD3686172B96FD50E731F001184F19AACE0B94B07C4D6C64AF0306B70F'
 
 if (!(Test-Path -LiteralPath (Join-Path $dependencyRoot 'CUE4Parse/CUE4Parse.csproj'))) {
     if ((Test-Path -LiteralPath $dependencyRoot) -and (Get-ChildItem -LiteralPath $dependencyRoot -Force | Measure-Object).Count -gt 0) {
