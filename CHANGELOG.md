@@ -2,6 +2,9 @@
 
 ## 1.2.0
 
+> This release is a modified and updated version of [plu1337/fmodel-mcp](https://github.com/plu1337/fmodel-mcp)
+> by [plu1337](https://github.com/plu1337), the original author of FModel MCP (versions up to 1.1.1).
+
 FModel MCP lets AI assistants explore Unreal Engine game archives through the Model Context Protocol:
 open PAK/IoStore archives, browse and search assets, inspect packages and properties, preview textures,
 decompile Blueprints to pseudocode, and export textures, meshes, animations, audio and worlds. It works
@@ -64,6 +67,8 @@ Future updates need no client changes. Your `config.json` is kept.
 | `*.sha256` | SHA-256 checksums |
 
 ## 1.1.1
+
+Released by plu1337 in the original repository, [plu1337/fmodel-mcp](https://github.com/plu1337/fmodel-mcp).
 
 - Fixed inline texture previews sending raw PNG bytes where MCP requires base64 text. Images now display correctly in MCP clients.
 - Added a regression test that opens a real Unreal texture through the official stdio MCP client and validates the received PNG encoding and dimensions.

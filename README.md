@@ -1,5 +1,13 @@
 # FModel MCP
 
+> [!NOTE]
+> This project is a modified and updated version of **[plu1337/fmodel-mcp](https://github.com/plu1337/fmodel-mcp)**,
+> created by [plu1337](https://github.com/plu1337). Full credit for the original server, its tools and the
+> Windows installer goes to the original author. This repository continues the project under the same
+> GPL-3.0-or-later license, with an updated CUE4Parse release, the current MCP protocol, a stable install
+> path, multi-client setup guides and expanded documentation. See [CHANGELOG.md](CHANGELOG.md) for the
+> changes since the original v1.1.1.
+
 [![Build and test](https://github.com/MayankS-Code/fmodel-mcp/actions/workflows/build.yml/badge.svg)](https://github.com/MayankS-Code/fmodel-mcp/actions/workflows/build.yml)
 [![Latest release](https://img.shields.io/github/v/release/MayankS-Code/fmodel-mcp)](https://github.com/MayankS-Code/fmodel-mcp/releases/latest)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)

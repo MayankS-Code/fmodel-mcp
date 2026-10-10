@@ -1,5 +1,9 @@
 FModel MCP
-Copyright 2026 FModel MCP contributors
+Original work Copyright 2026 plu1337 (https://github.com/plu1337/fmodel-mcp), up to version 1.1.1.
+Modifications Copyright 2026 MayankS-Code (https://github.com/MayankS-Code/fmodel-mcp), from version 1.2.0.
+
+This is a modified version of plu1337/fmodel-mcp, distributed under the GPL-3.0-or-later as permitted
+by the original license. Changes since the original v1.1.1 are listed in CHANGELOG.md.
 
 An independent community project inspired by FModel (https://github.com/4sval/FModel).
 Not affiliated with or endorsed by Epic Games, the FModel project, or CUE4Parse.
