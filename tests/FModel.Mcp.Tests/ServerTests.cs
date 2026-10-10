@@ -38,7 +38,7 @@ public sealed class ServerTests : IAsyncLifetime
     private static string FindRepo()
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
-            if (File.Exists(Path.Combine(dir.FullName, "FModel.Mcp", "FModel.Mcp.csproj"))) return dir.FullName;
+            if (File.Exists(Path.Combine(dir.FullName, "src", "FModel.Mcp", "FModel.Mcp.csproj"))) return dir.FullName;
         throw new DirectoryNotFoundException("Repository root not found.");
     }
     private static JObject Data(CallToolResult result)
@@ -237,13 +237,13 @@ public sealed class ServerTests : IAsyncLifetime
         var config = Path.Combine(_temp, "config.json");
         await File.WriteAllTextAsync(config, JsonConvert.SerializeObject(new ServerOptions { InputRoots = [Fixture()], OutputRoot = Path.Combine(_temp, "stdio-output") }), TestContext.Current.CancellationToken);
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent!.Name;
-        var dll = Path.Combine(_repo, "FModel.Mcp", "bin", configuration, "net10.0", "FModel.Mcp.dll");
+        var dll = Path.Combine(_repo, "src", "FModel.Mcp", "bin", configuration, "net10.0", "FModel.Mcp.dll");
         var transport = new StdioClientTransport(new() { Command = "dotnet", Arguments = [dll, "--config", config], Name = "FModel test" });
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
         await using var client = await McpClient.CreateAsync(transport, cancellationToken: timeout.Token);
         // The official SDK client negotiates the newest revision; Smoke-Mcp.ps1 covers the 2025-11-25 initialize handshake.
         Assert.Equal("2026-07-28", client.NegotiatedProtocolVersion);
-        var projectVersion = System.Xml.Linq.XDocument.Load(Path.Combine(_repo, "FModel.Mcp", "FModel.Mcp.csproj")).Descendants("Version").First().Value;
+        var projectVersion = System.Xml.Linq.XDocument.Load(Path.Combine(_repo, "src", "FModel.Mcp", "FModel.Mcp.csproj")).Descendants("Version").First().Value;
         Assert.Equal(projectVersion, client.ServerInfo.Version);
         var tools = await client.ListToolsAsync(cancellationToken: timeout.Token);
         Assert.Equal(34, tools.Count);
@@ -270,7 +270,7 @@ public sealed class ServerTests : IAsyncLifetime
         var config = Path.Combine(_temp, "preview-config.json");
         await File.WriteAllTextAsync(config, JsonConvert.SerializeObject(new ServerOptions { InputRoots = [_temp], OutputRoot = Path.Combine(_temp, "preview-output") }), TestContext.Current.CancellationToken);
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent!.Name;
-        var dll = Path.Combine(_repo, "FModel.Mcp", "bin", configuration, "net10.0", "FModel.Mcp.dll");
+        var dll = Path.Combine(_repo, "src", "FModel.Mcp", "bin", configuration, "net10.0", "FModel.Mcp.dll");
         var transport = new StdioClientTransport(new() { Command = "dotnet", Arguments = [dll, "--config", config], Name = "FModel preview test" });
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
         await using var client = await McpClient.CreateAsync(transport, cancellationToken: timeout.Token);

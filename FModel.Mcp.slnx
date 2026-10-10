@@ -1,4 +1,8 @@
 <Solution>
-  <Project Path="FModel.Mcp/FModel.Mcp.csproj" />
-  <Project Path="FModel.Mcp.Tests/FModel.Mcp.Tests.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/FModel.Mcp/FModel.Mcp.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FModel.Mcp.Tests/FModel.Mcp.Tests.csproj" />
+  </Folder>
 </Solution>

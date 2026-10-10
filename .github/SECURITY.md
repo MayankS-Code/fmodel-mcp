@@ -16,4 +16,4 @@ publicly available or synthetic files where possible.
 ## Details
 
 The trust model, AES key handling and known dependency advisories are documented in
-[docs/security.md](docs/security.md).
+[docs/security.md](../docs/security.md).

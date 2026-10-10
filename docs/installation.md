@@ -157,13 +157,13 @@ and network access for the first build (it downloads the pinned CUE4Parse releas
 ```powershell
 git clone https://github.com/plu1337/fmodel-mcp.git
 cd fmodel-mcp
-.\setup.bat
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Release.ps1
 ```
 
-`setup.bat` checks prerequisites, builds, runs the tests, publishes a package to
+This checks prerequisites, builds, runs the tests, publishes a package to
 `artifacts\fmodel-mcp-<version>-win-x64\` with a ZIP and checksum, and tests the installer in an isolated
-folder. Run `setup.bat -InstallPrerequisites` to be offered a `winget` install of missing Git or .NET
-SDK. Setup asks before installing anything and never edits client configuration.
+folder. Add `-InstallPrerequisites` to be offered a `winget` install of missing Git or .NET SDK. Setup
+asks before installing anything and never edits client configuration.
 
 Then install the package you built:
 

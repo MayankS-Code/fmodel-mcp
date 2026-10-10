@@ -5,7 +5,8 @@ param([string]$ServerPath, [string]$ConfigPath, [switch]$OpenSavedGame, [string]
 if ($AssetQuery -and !$OpenSavedGame) { throw '-AssetQuery requires -OpenSavedGame.' }
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-if (!$ServerPath) { $ServerPath = Join-Path $repoRoot 'FModel.Mcp/bin/Release/net10.0/FModel.Mcp.exe' }
+# Standalone (also shipped in release packages, without Common.ps1): default to a source-tree Release build.
+if (!$ServerPath) { $ServerPath = Join-Path $repoRoot 'src/FModel.Mcp/bin/Release/net10.0/FModel.Mcp.exe' }
 $info = [Diagnostics.ProcessStartInfo]::new()
 $info.FileName = [IO.Path]::GetFullPath($ServerPath)
 if ($ConfigPath) { $info.Arguments = '--config "' + [IO.Path]::GetFullPath($ConfigPath) + '"' }

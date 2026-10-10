@@ -51,8 +51,10 @@ VS Code, Cursor and Codex. Game archives are only read, never modified.
 | [Development](docs/development.md) | Building, testing, dependency updates and contributing |
 | [Releasing](docs/releasing.md) | How versions are tagged, built and published |
 | [Architecture](docs/architecture.md) | Design and coverage compared with the FModel desktop app |
+| [Dependencies](docs/dependencies.md) | Pinned versions, licenses and compatibility notes |
 
-Dependency versions are listed in [DEPENDENCIES.md](DEPENDENCIES.md), and changes in [CHANGELOG.md](CHANGELOG.md).
+Changes are listed in [CHANGELOG.md](CHANGELOG.md). Contributions are welcome; see
+[CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## Compatibility
 

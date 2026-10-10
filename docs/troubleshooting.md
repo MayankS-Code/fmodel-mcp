@@ -52,7 +52,7 @@ profiles. See [Security](security.md#reporting).
 
 | Symptom | What to check |
 | --- | --- |
-| `.NET 10 SDK was not found` | Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), reopen PowerShell, and rerun. Or run `setup.bat -InstallPrerequisites`. |
+| `.NET 10 SDK was not found` | Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), reopen PowerShell, and rerun. Or run `scripts\Setup-Release.ps1 -InstallPrerequisites`. |
 | `A compatible .NET SDK was not found` when running `dotnet` by hand | `global.json` requires a .NET 10 SDK. Install one, or use the scripts, which also find a repository-local `.dotnet\` SDK. |
 | `CUE4Parse archive checksum mismatch` | The download was corrupted, or GitHub changed the archive. Delete `CUE4Parse\` and retry. If it persists, open an issue. |
 | `CUE4Parse is nonempty but incomplete` | A previous bootstrap was interrupted. Delete the `CUE4Parse\` folder and rebuild. |

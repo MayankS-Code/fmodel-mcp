@@ -34,8 +34,14 @@ function Invoke-DotNet([string]$DotNetPath, [string[]]$Arguments, [string]$Failu
     if ($LASTEXITCODE -ne 0) { throw "$FailureMessage (dotnet exit code $LASTEXITCODE)." }
 }
 
+# Repository layout: the only place project locations are defined for the build scripts.
+function Get-ServerProjectDir([string]$RepositoryRoot) { return Join-Path $RepositoryRoot 'src/FModel.Mcp' }
+function Get-ServerProject([string]$RepositoryRoot) { return Join-Path (Get-ServerProjectDir $RepositoryRoot) 'FModel.Mcp.csproj' }
+function Get-ServerBuildExe([string]$RepositoryRoot) { return Join-Path (Get-ServerProjectDir $RepositoryRoot) 'bin/Release/net10.0/FModel.Mcp.exe' }
+function Get-TestProjectDir([string]$RepositoryRoot) { return Join-Path $RepositoryRoot 'tests/FModel.Mcp.Tests' }
+
 function Get-ProjectVersion([string]$RepositoryRoot) {
-    [xml]$project = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'FModel.Mcp/FModel.Mcp.csproj') -Raw
+    [xml]$project = Get-Content -LiteralPath (Get-ServerProject $RepositoryRoot) -Raw
     return [string]$project.Project.PropertyGroup.Version
 }
 

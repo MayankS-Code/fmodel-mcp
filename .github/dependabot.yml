@@ -4,8 +4,8 @@ version: 2
 updates:
   - package-ecosystem: nuget
     directories:
-      - /FModel.Mcp
-      - /FModel.Mcp.Tests
+      - /src/FModel.Mcp
+      - /tests/FModel.Mcp.Tests
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

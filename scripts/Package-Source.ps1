@@ -2,7 +2,7 @@ param()
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 . (Join-Path $PSScriptRoot 'Common.ps1')
-$version = ([xml](Get-Content -LiteralPath (Join-Path $repoRoot 'FModel.Mcp/FModel.Mcp.csproj') -Raw)).Project.PropertyGroup.Version
+$version = Get-ProjectVersion $repoRoot
 $dependencyRoot = Join-Path $repoRoot 'CUE4Parse'
 if (!(Test-Path -LiteralPath (Join-Path $dependencyRoot 'CUE4Parse/CUE4Parse.csproj'))) { throw 'Initialize CUE4Parse before bundling source.' }
 $files = @(& git -C $repoRoot ls-files)

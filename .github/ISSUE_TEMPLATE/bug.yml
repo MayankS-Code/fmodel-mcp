@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Thanks for reporting. Please check [Troubleshooting](https://github.com/plu1337/fmodel-mcp/blob/main/docs/troubleshooting.md) first.
-        **Never include AES keys, FModel profiles, private paths or game files.** Report security problems privately via [SECURITY.md](https://github.com/plu1337/fmodel-mcp/blob/main/SECURITY.md).
+        **Never include AES keys, FModel profiles, private paths or game files.** Report security problems privately via [SECURITY.md](https://github.com/plu1337/fmodel-mcp/blob/main/.github/SECURITY.md).
   - type: input
     id: version
     attributes:
