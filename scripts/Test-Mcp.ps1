@@ -3,7 +3,7 @@ param(
     [string]$ServerPath,
     [string]$ConfigPath,
     [switch]$OpenSavedGame,
-    [switch]$InspectWushu
+    [string]$AssetQuery
 )
 
 $ErrorActionPreference = 'Stop'
@@ -23,6 +23,6 @@ if (!(Test-Path -LiteralPath $ServerPath -PathType Leaf)) { throw "MCP executabl
 $smokeArgs = @{ ServerPath = $ServerPath }
 if ($ConfigPath) { $smokeArgs.ConfigPath = [IO.Path]::GetFullPath($ConfigPath) }
 if ($OpenSavedGame) { $smokeArgs.OpenSavedGame = $true }
-if ($InspectWushu) { $smokeArgs.InspectWushu = $true }
+if ($AssetQuery) { $smokeArgs.AssetQuery = $AssetQuery }
 & (Join-Path $PSScriptRoot 'Smoke-Mcp.ps1') @smokeArgs
 Write-Host 'Tests and MCP protocol smoke test passed.'

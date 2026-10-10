@@ -1,8 +1,16 @@
 param([string]$PackagePath)
 $ErrorActionPreference = 'Stop'
-$repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+. (Join-Path $PSScriptRoot 'Common.ps1')
+$repoRoot = Get-RepositoryRoot
 $testRoot = Join-Path $repoRoot ('artifacts/installer-test-' + [Guid]::NewGuid().ToString('N'))
-if (!$PackagePath) { $PackagePath = Join-Path $repoRoot 'artifacts/fmodel-mcp' }
+if (!$PackagePath) {
+    # Default to the newest published package for the current project version.
+    $version = Get-ProjectVersion $repoRoot
+    $latest = Get-ChildItem -LiteralPath (Join-Path $repoRoot 'artifacts') -Directory -Filter "fmodel-mcp-$version-win-x64*" -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+    if (!$latest) { throw "No published package for $version under artifacts/. Run scripts/Publish-Mcp.ps1 first or pass -PackagePath." }
+    $PackagePath = $latest.FullName
+}
 $package = [IO.Path]::GetFullPath($PackagePath)
 $installer = Join-Path $package 'Install-Mcp.ps1'
 New-Item -ItemType Directory -Path $testRoot | Out-Null

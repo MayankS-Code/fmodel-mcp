@@ -7,6 +7,7 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -18,21 +19,38 @@ jobs:
         shell: pwsh
         run: |
           $version = ([xml](Get-Content FModel.Mcp/FModel.Mcp.csproj -Raw)).Project.PropertyGroup.Version
-          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'Release tag must match project version.' }
-      - name: Build and test release
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw "Tag $env:GITHUB_REF_NAME does not match project version $version." }
+      - name: Bootstrap CUE4Parse and build
         shell: pwsh
         run: ./scripts/Build-Mcp.ps1
-      - name: Verify installer
+      - name: Unit tests and MCP protocol smoke
         shell: pwsh
-        run: ./scripts/Test-Installer.ps1
+        run: ./scripts/Test-Mcp.ps1
+      - name: Publish package and verify installer
+        shell: pwsh
+        run: |
+          $package = ./scripts/Publish-Mcp.ps1 | Select-Object -Last 1
+          ./scripts/Test-Installer.ps1 -PackagePath $package
       - name: Bundle source
         shell: pwsh
         run: ./scripts/Package-Source.ps1
-      - name: Publish release
+      - name: Extract release notes
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          $notes = [Collections.Generic.List[string]]::new(); $inSection = $false
+          foreach ($line in Get-Content CHANGELOG.md) {
+            if ($line -match '^## ') { if ($inSection) { break }; $inSection = $line -eq "## $version"; continue }
+            if ($inSection) { $notes.Add($line) }
+          }
+          if (!($notes -join '').Trim()) { throw "CHANGELOG.md has no '## $version' section." }
+          $notes | Set-Content -LiteralPath release-notes.md -Encoding utf8
+      - name: Publish GitHub release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $assets = Get-ChildItem artifacts -File | Where-Object { $_.Name -match '\.(zip|sha256)$' } | ForEach-Object FullName
-          gh release create $env:GITHUB_REF_NAME @assets --verify-tag --title "FModel MCP $env:GITHUB_REF_NAME" --notes-file CHANGELOG.md
+          if (!$assets) { throw 'No release assets were produced.' }
+          gh release create $env:GITHUB_REF_NAME @assets --verify-tag --title "FModel MCP $env:GITHUB_REF_NAME" --notes-file release-notes.md
           if ($LASTEXITCODE -ne 0) { throw 'GitHub release publication failed.' }

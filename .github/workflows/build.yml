@@ -6,29 +6,33 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
-      - name: Build, test and package
+      - name: Bootstrap CUE4Parse and build
         shell: pwsh
         run: ./scripts/Build-Mcp.ps1
       - name: Unit tests and MCP protocol smoke
         shell: pwsh
         run: ./scripts/Test-Mcp.ps1
-      - name: Publish versioned package
+      - name: Publish package and verify installer
         shell: pwsh
-        run: ./scripts/Publish-Mcp.ps1
-      - name: Check installer and update preservation
-        shell: pwsh
-        run: ./scripts/Test-Installer.ps1 -PackagePath ./artifacts/fmodel-mcp-1.1.2-win-x64
+        run: |
+          $package = ./scripts/Publish-Mcp.ps1 | Select-Object -Last 1
+          ./scripts/Test-Installer.ps1 -PackagePath $package
       - uses: actions/upload-artifact@v4
         with:
           name: fmodel-mcp-win-x64
           path: |
             artifacts/*.zip
             artifacts/*.sha256
+          if-no-files-found: error
