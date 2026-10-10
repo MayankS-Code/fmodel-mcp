@@ -1,10 +1,33 @@
 name: Feature request
-description: Suggest a new asset workflow or improvement.
+description: Suggest a new capability or an improvement to an existing workflow.
+labels: [enhancement]
 body:
-  - type: textarea
-    id: workflow
+  - type: markdown
     attributes:
-      label: What should an assistant be able to accomplish?
-      description: Describe the desired result, relevant asset types and current limitation.
+      value: |
+        Some features are intentionally out of scope (see [Not supported](https://github.com/plu1337/fmodel-mcp/blob/main/docs/tools.md#not-supported)),
+        including game modification, remote key downloads and shell access.
+  - type: textarea
+    id: goal
+    attributes:
+      label: What should an assistant be able to do?
+      description: Describe the result you want, not a specific implementation.
     validations:
       required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current limitation
+      description: What happens today, and which tools or workarounds you tried.
+    validations:
+      required: true
+  - type: input
+    id: assets
+    attributes:
+      label: Asset types or formats involved
+      placeholder: "SkeletalMesh, Niagara systems, Wwise banks"
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Related FModel or CUE4Parse features, links, or engine versions.

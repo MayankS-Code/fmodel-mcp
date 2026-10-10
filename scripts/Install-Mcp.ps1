@@ -122,11 +122,24 @@ if ($existingConfig -and ($importedFModel -or $PSBoundParameters.ContainsKey('In
 if (!$existingConfig -or $importedFModel -or $PSBoundParameters.ContainsKey('InputRoots') -or $PSBoundParameters.ContainsKey('OutputRoot')) {
     [IO.File]::WriteAllText($configPath, ($config | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
 }
-& (Join-Path $destination 'Smoke-Mcp.ps1') -ServerPath $executable -ConfigPath $configPath
-$client = @{ mcpServers = @{ fmodel = @{ command = $executable; args = @('--config', $configPath) } } }
+# Stable entry point: 'current' is a directory junction to the newest version, so client configuration
+# never changes across updates. Re-pointing it does not affect a server that is already running.
+$current = Join-Path $InstallRoot 'current'
+if (Test-Path -LiteralPath $current) {
+    $currentItem = Get-Item -LiteralPath $current -Force
+    if (!($currentItem.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        throw "$current exists and is not a junction created by this installer. Move it elsewhere and rerun."
+    }
+    # Non-recursive delete removes only the junction, never the version it points to.
+    [IO.Directory]::Delete($current, $false)
+}
+New-Item -ItemType Junction -Path $current -Target $destination | Out-Null
+$stableExecutable = Join-Path $current 'FModel.Mcp.exe'
+& (Join-Path $destination 'Smoke-Mcp.ps1') -ServerPath $stableExecutable -ConfigPath $configPath
+$client = @{ mcpServers = @{ fmodel = @{ command = $stableExecutable; args = @('--config', $configPath) } } }
 [IO.File]::WriteAllText((Join-Path $InstallRoot 'mcp-client.json'), ($client | ConvertTo-Json -Depth 10), [Text.UTF8Encoding]::new($false))
 if (!$SkipRegistration) {
-    & $CodexPath mcp add fmodel -- $executable --config $configPath
+    & $CodexPath mcp add fmodel -- $stableExecutable --config $configPath
     if ($LASTEXITCODE -ne 0) { throw 'Files were installed, but Codex registration failed. Use mcp-client.json for manual registration.' }
     & $CodexPath mcp get fmodel --json
     if ($LASTEXITCODE -ne 0) { throw 'Codex registration could not be verified.' }
@@ -134,10 +147,11 @@ if (!$SkipRegistration) {
 Write-Host "Installed FModel MCP $version at $destination"
 Write-Host "Game folders and export settings: $configPath"
 Write-Host "MCP client configuration: $(Join-Path $InstallRoot 'mcp-client.json')"
-Write-Host "  command: $executable"
+Write-Host "  command: $stableExecutable"
 Write-Host "  args:    --config $configPath"
+Write-Host 'This path stays the same across updates; after future updates, just restart your MCP client.'
 if ($SkipRegistration) {
-    Write-Host 'Add this server to your MCP client (or update its path after an upgrade), then restart the client.'
+    Write-Host 'On first install, add this server to your MCP client, then restart the client.'
     Write-Host 'Client setup guide: https://github.com/plu1337/fmodel-mcp/blob/main/docs/installation.md#connect-your-mcp-client'
 } else {
     Write-Host 'Registered with Codex. Restart the fmodel server in Codex, or restart the app, to load its tools.'

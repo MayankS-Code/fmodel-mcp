@@ -1,7 +1,8 @@
 # Examples
 
-Replace every `<you>`, `<version>-<id>` and game path with your own values. After running the installer,
-`%LOCALAPPDATA%\FModelMcp\mcp-client.json` contains the exact executable and config paths.
+Replace every `<you>` and game path with your own values. After running the installer,
+`%LOCALAPPDATA%\FModelMcp\mcp-client.json` contains the exact executable and config paths. The
+executable path (`...\FModelMcp\current\FModel.Mcp.exe`) stays the same across updates.
 
 ## Server configuration
 

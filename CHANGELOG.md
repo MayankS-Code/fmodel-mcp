@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.1.2
+## 1.2.0
+
+- **Stable executable path:** the installer now maintains `current\FModel.Mcp.exe`, a junction to the newest version. Client configuration stays the same across updates; clients set up with 1.1.1 or earlier need their `command` changed once.
+- The server version is read from the project file instead of being hardcoded in two places.
+- GitHub: structured bug and feature forms, private security reporting link, pull request checklist, and Dependabot for NuGet and Actions.
 
 - Pinned CUE4Parse to its latest release tag, `1.2.2.202610` (USMAP v5 support), and retained the MCP output-path safety integration.
 - Fixed a clean-checkout bootstrap failure: the `Microsoft.Bcl.Memory` integration step now inserts the package version instead of replacing a line that does not exist upstream.
