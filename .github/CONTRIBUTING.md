@@ -7,13 +7,13 @@ Thanks for helping improve FModel MCP.
 On Windows x64 with Git and the .NET 10 SDK installed:
 
 ```powershell
-git clone https://github.com/plu1337/fmodel-mcp.git
+git clone --recurse-submodules https://github.com/plu1337/fmodel-mcp.git
 cd fmodel-mcp
 ./scripts/Build-Mcp.ps1
 ./scripts/Test-Mcp.ps1
 ```
 
-The first build downloads the pinned CUE4Parse release. See [docs/development.md](../docs/development.md)
+The first build initializes the CUE4Parse submodule (or clone with `--recurse-submodules`). See [docs/development.md](../docs/development.md)
 for the repository layout, all scripts, coding rules and how to update dependencies.
 
 ## Pull requests

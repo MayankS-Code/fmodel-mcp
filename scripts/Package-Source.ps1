@@ -5,10 +5,12 @@ $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $version = Get-ProjectVersion $repoRoot
 $dependencyRoot = Join-Path $repoRoot 'CUE4Parse'
 if (!(Test-Path -LiteralPath (Join-Path $dependencyRoot 'CUE4Parse/CUE4Parse.csproj'))) { throw 'Initialize CUE4Parse before bundling source.' }
-$files = @(& git -C $repoRoot ls-files)
+# Tracked files, minus the CUE4Parse submodule entry itself; the submodule's files are added below so the
+# bundle builds without Git or network access (for GPL source availability).
+$files = @(& git -C $repoRoot ls-files | Where-Object { $_ -ne 'CUE4Parse' })
 if ($LASTEXITCODE -ne 0 -or !$files) { throw 'The source bundle requires a Git checkout with tracked source files.' }
 $files += @(Get-ChildItem -LiteralPath $dependencyRoot -Recurse -File -Force |
-    Where-Object { $_.FullName.Substring($dependencyRoot.Length) -notmatch '[\\/](bin|obj|builddir|\.git|\.vs)[\\/]' } |
+    Where-Object { $_.FullName.Substring($dependencyRoot.Length) -notmatch '[\\/](bin|obj|builddir|\.git|\.vs)([\\/]|$)' } |
     ForEach-Object { $_.FullName.Substring($repoRoot.Length + 1).Replace('\', '/') })
 $zipPath = Join-Path $repoRoot "artifacts/fmodel-mcp-$version-source.zip"
 for ($index = 2; (Test-Path -LiteralPath $zipPath) -or (Test-Path -LiteralPath ($zipPath + '.sha256')); $index++) { $zipPath = Join-Path $repoRoot "artifacts/fmodel-mcp-$version-source-$index.zip" }

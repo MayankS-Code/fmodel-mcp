@@ -3,7 +3,6 @@
 **/builddir/
 .packages/
 .dotnet/
-CUE4Parse/
 artifacts/
 Exports/
 *.local.json

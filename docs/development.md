@@ -18,7 +18,7 @@
 | `docs/` | User and developer documentation |
 | `examples/` | Example server and client configurations |
 | `.github/` | CI and release workflows, issue and PR templates, Dependabot, contributing and security policy |
-| `CUE4Parse/` | Pinned CUE4Parse release, downloaded by the build (ignored by Git) |
+| `CUE4Parse/` | Git submodule pinned to a CUE4Parse release tag. The build applies small integrations inside it (see below). |
 | `artifacts/` | Published packages and ZIPs (ignored by Git) |
 
 ## Build and test
@@ -26,11 +26,11 @@
 | Script | What it does |
 | --- | --- |
 | `scripts/Setup-Release.ps1` | Everything below in order, plus prerequisite checks. The one-command path for new contributors. `-InstallPrerequisites` offers a `winget` install of missing Git or .NET SDK. |
-| `scripts/Build-Mcp.ps1` | Downloads and verifies the pinned CUE4Parse release if needed, applies the integrations, restores packages into `.packages\` and builds Release. |
+| `scripts/Build-Mcp.ps1` | Initializes the CUE4Parse submodule if needed, applies the integrations, restores packages into `.packages\` and builds Release. |
 | `scripts/Test-Mcp.ps1` | Builds and runs the 21 tests, then the stdio protocol smoke test. Run `Build-Mcp.ps1` first, since it skips restore. |
 | `scripts/Publish-Mcp.ps1` | Publishes a self-contained win-x64 package to a new `artifacts\fmodel-mcp-<version>-win-x64*` folder, generates license notices, smoke-tests it, and writes a ZIP and `.sha256`. Prints the package folder as its last output line. |
 | `scripts/Test-Installer.ps1` | Runs the installer against a package in an isolated temporary folder: fresh install, saved-profile import without copying keys, configuration preserved on update, side-by-side versions, and the stable `current\` junction re-pointed on update without changing the client configuration. Defaults to the newest package for the current version. |
-| `scripts/Package-Source.ps1` | Builds a source ZIP that includes the bootstrapped CUE4Parse tree. |
+| `scripts/Package-Source.ps1` | Builds a source ZIP that includes the CUE4Parse submodule files, so it builds without Git. |
 | `scripts/Test-DocLinks.ps1` | Checks that relative links and `#anchors` in all Markdown files resolve. Runs in CI. |
 | `scripts/Smoke-Mcp.ps1` | Standalone protocol smoke test. `-OpenSavedGame` mounts the configured saved FModel profile, and `-AssetQuery <name>` also inspects one matching asset. Asset paths and values are not printed. |
 
@@ -79,27 +79,28 @@ known, documented advisory (see [Security](security.md#known-dependency-advisori
 ## Updating CUE4Parse
 
 The project tracks CUE4Parse's monthly **release tags** (for example `1.2.2.202610`), not `master`.
-Integrations are applied to the downloaded source by `scripts/Initialize-Mcp.ps1`; there is no fork.
+CUE4Parse is a git submodule; `scripts/Initialize-Mcp.ps1` applies small integrations to its working tree
+after checkout. There is no fork. `.gitmodules` sets `ignore = dirty`, so those local edits do not show
+as changes in the parent repository.
 
-1. Find the newest tag and its commit:
-
-   ```powershell
-   git ls-remote --tags https://github.com/FabianFG/CUE4Parse.git
-   ```
-
-2. Compute the SHA-256 of the archive GitHub serves for that commit:
+1. Fetch tags and pick the newest release:
 
    ```powershell
-   $sha = '<commit>'
-   Invoke-WebRequest "https://codeload.github.com/FabianFG/CUE4Parse/zip/$sha" -OutFile $env:TEMP\cue4parse.zip
-   (Get-FileHash $env:TEMP\cue4parse.zip -Algorithm SHA256).Hash
+   git -C CUE4Parse fetch --tags
+   git -C CUE4Parse tag --sort=-creatordate | Select-Object -First 5
    ```
 
-3. Update `$revision` and `$expectedHash` (and the tag comment) in `scripts/Initialize-Mcp.ps1`.
-4. Delete or move the existing `CUE4Parse\` folder, so the next build downloads the new release.
-5. Run `Build-Mcp.ps1` and `Test-Mcp.ps1`. If an integration anchor is missing, the bootstrap stops with
-   `Unsupported CUE4Parse revision`; adjust that integration in `Initialize-Mcp.ps1`.
-6. Update the revision and hash in [Dependencies](dependencies.md), [NOTICE](../NOTICE) and
+2. Discard the local integrations and check out the new tag:
+
+   ```powershell
+   git -C CUE4Parse checkout -f <tag>
+   ```
+
+3. Run `Build-Mcp.ps1` (it re-applies the integrations) and `Test-Mcp.ps1`. If an integration anchor is
+   missing, the build stops with `Unsupported CUE4Parse revision`; adjust that integration in
+   `Initialize-Mcp.ps1`.
+4. Record the new pin in the parent repository: `git add CUE4Parse`.
+5. Update the release and commit in [Dependencies](dependencies.md), [NOTICE](../NOTICE) and
    [architecture.md](architecture.md#dependency-integration), and add a [CHANGELOG](../CHANGELOG.md) entry.
 
 ## Updating NuGet packages

@@ -152,10 +152,10 @@ to keep exported files.
 ## Build from source
 
 Requirements: Windows x64, Git, the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0),
-and network access for the first build (it downloads the pinned CUE4Parse release and NuGet packages).
+and network access for the first build (it fetches the CUE4Parse submodule and NuGet packages).
 
 ```powershell
-git clone https://github.com/plu1337/fmodel-mcp.git
+git clone --recurse-submodules https://github.com/plu1337/fmodel-mcp.git
 cd fmodel-mcp
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Release.ps1
 ```

@@ -51,7 +51,7 @@ The project uses [semantic versioning](https://semver.org/). The version lives i
 On a `v*` tag, on a fresh Windows runner, it:
 
 1. fails if the tag does not match the project version;
-2. bootstraps the pinned CUE4Parse release and builds;
+2. checks out the CUE4Parse submodule, applies the integrations and builds;
 3. runs all tests and the protocol smoke test;
 4. publishes the self-contained package and runs the isolated installer test against it;
 5. builds the source bundle;

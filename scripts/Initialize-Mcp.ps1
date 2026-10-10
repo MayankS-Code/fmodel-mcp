@@ -1,48 +1,26 @@
 param()
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'Common.ps1')
-$repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$repoRoot = Get-RepositoryRoot
 $dependencyRoot = Join-Path $repoRoot 'CUE4Parse'
-# CUE4Parse release tag 1.2.2.202610 (matches the NuGet package of the same version).
-$revision = '1e3293d4b3ecaf6ef3d73641b9ffe47fa4cf1562'
-$expectedHash = '528B6EFD3686172B96FD50E731F001184F19AACE0B94B07C4D6C64AF0306B70F'
 
+# CUE4Parse is a git submodule pinned to a release tag (see .gitmodules and docs/development.md).
 if (!(Test-Path -LiteralPath (Join-Path $dependencyRoot 'CUE4Parse/CUE4Parse.csproj'))) {
-    if ((Test-Path -LiteralPath $dependencyRoot) -and (Get-ChildItem -LiteralPath $dependencyRoot -Force | Measure-Object).Count -gt 0) {
-        throw 'CUE4Parse is nonempty but incomplete. Preserve that directory and restore the dependency manually; this script will not overwrite it.'
+    if (!(Test-Path -LiteralPath (Join-Path $repoRoot '.git'))) {
+        throw 'CUE4Parse is missing. GitHub "Download ZIP" archives do not include submodules: clone the repository with Git instead, or use the source ZIP from a GitHub release.'
     }
-    [IO.Directory]::CreateDirectory($dependencyRoot) | Out-Null
-    $archivePath = Join-Path ([IO.Path]::GetTempPath()) ('fmodel-cue4parse-' + [Guid]::NewGuid().ToString('N') + '.zip')
-    try {
-        Write-Host "Downloading pinned CUE4Parse revision $revision"
-        Invoke-WebRequest -Uri "https://codeload.github.com/FabianFG/CUE4Parse/zip/$revision" -OutFile $archivePath
-        if ((Get-Sha256Checksum $archivePath) -ne $expectedHash) { throw 'CUE4Parse archive checksum mismatch.' }
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        $archive = [IO.Compression.ZipFile]::OpenRead($archivePath)
-        try {
-            foreach ($entry in $archive.Entries) {
-                $parts = $entry.FullName.Split('/', 2)
-                if ($parts.Count -lt 2 -or !$parts[1]) { continue }
-                $destination = [IO.Path]::GetFullPath((Join-Path $dependencyRoot $parts[1]))
-                if (!$destination.StartsWith($dependencyRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw 'Unsafe archive entry.' }
-                if ($entry.FullName.EndsWith('/')) { [IO.Directory]::CreateDirectory($destination) | Out-Null }
-                else {
-                    [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($destination)) | Out-Null
-                    [IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $destination, $false)
-                }
-            }
-        } finally { $archive.Dispose() }
-    } finally {
-        if (Test-Path -LiteralPath $archivePath) { Remove-Item -LiteralPath $archivePath }
-    }
+    Write-Host 'Initializing the CUE4Parse submodule'
+    & git -C $repoRoot submodule update --init -- CUE4Parse
+    if ($LASTEXITCODE -ne 0) { throw 'git submodule update failed. Check network access, then rerun.' }
 }
+$revision = if (Test-Path -LiteralPath (Join-Path $dependencyRoot '.git')) { (& git -C $dependencyRoot rev-parse HEAD) } else { 'from source bundle' }
 
 # Idempotent host integrations and compatible .NET package patch pins. Existing changes are preserved.
 function Add-SourceIntegration([string]$RelativePath, [string]$Marker, [string]$Anchor, [string]$Replacement) {
     $path = Join-Path $dependencyRoot $RelativePath
     $content = [IO.File]::ReadAllText($path).Replace("`r`n", "`n")
     if ($content.Contains($Marker)) { return }
-    if (!$content.Contains($Anchor)) { throw "Unsupported CUE4Parse revision: expected source anchor missing in $RelativePath. Tested revision is $revision." }
+    if (!$content.Contains($Anchor)) { throw "Unsupported CUE4Parse revision ($revision): expected source anchor missing in $RelativePath. Run 'git submodule update --init' to restore the pinned release." }
     [IO.File]::WriteAllText($path, $content.Replace($Anchor, $Replacement), [Text.UTF8Encoding]::new($false))
 }
 $sessionPath = 'CUE4Parse-Conversion/ExportSession.cs'

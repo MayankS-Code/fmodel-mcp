@@ -15,6 +15,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: true
       - name: Check documentation links
         shell: pwsh
         run: ./scripts/Test-DocLinks.ps1
