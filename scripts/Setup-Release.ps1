@@ -30,13 +30,13 @@ foreach ($candidate in @($(if (Test-Path -LiteralPath $localDotnet) { $localDotn
     }
 }
 if (!$sdk) {
-    if (!$InstallPrerequisites) { throw 'The .NET 10 SDK is required. Install it from https://dotnet.microsoft.com/download/dotnet/10.0, or rerun setup.bat -InstallPrerequisites to offer a winget install.' }
+    if (!$InstallPrerequisites) { throw 'The .NET 10 SDK is required. Install it from https://dotnet.microsoft.com/download/dotnet/10.0, or rerun this script with -InstallPrerequisites to offer a winget install.' }
     Offer-WingetInstall 'Microsoft.DotNet.SDK.10' '.NET 10 SDK'
 }
 
 & (Join-Path $PSScriptRoot 'Build-Mcp.ps1')
 & (Join-Path $PSScriptRoot 'Test-Mcp.ps1')
-$publishOutput = Join-Path $root ('artifacts/fmodel-mcp-' + ([xml](Get-Content (Join-Path $root 'FModel.Mcp/FModel.Mcp.csproj') -Raw)).Project.PropertyGroup.Version + '-win-x64')
+$publishOutput = Join-Path $root ('artifacts/fmodel-mcp-' + (Get-ProjectVersion $root) + '-win-x64')
 $publishOutput = Get-UniquePath $publishOutput
 & (Join-Path $PSScriptRoot 'Publish-Mcp.ps1') -OutputDirectory $publishOutput
 & (Join-Path $PSScriptRoot 'Test-Installer.ps1') -PackagePath $publishOutput

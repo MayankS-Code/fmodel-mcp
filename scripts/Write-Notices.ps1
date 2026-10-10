@@ -1,6 +1,7 @@
 param([Parameter(Mandatory)][string]$PublishPath, [Parameter(Mandatory)][string]$PackagePath)
 $ErrorActionPreference = 'Stop'
-$repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+. (Join-Path $PSScriptRoot 'Common.ps1')
+$repoRoot = Get-RepositoryRoot
 $licenseRoot = Join-Path $PublishPath 'licenses'
 New-Item -ItemType Directory -Path $licenseRoot -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $repoRoot 'CUE4Parse/LICENSE') -Destination (Join-Path $licenseRoot 'CUE4Parse-LICENSE.txt')
@@ -11,7 +12,7 @@ if (!$runtime) { throw 'Expected the self-contained Microsoft.NETCore.App runtim
 $runtimePackage = Join-Path $PackagePath ('microsoft.netcore.app.runtime.win-x64/' + $runtime.version)
 Copy-Item -LiteralPath (Join-Path $runtimePackage 'LICENSE.TXT') -Destination (Join-Path $licenseRoot 'Dotnet-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $runtimePackage 'THIRD-PARTY-NOTICES.TXT') -Destination (Join-Path $licenseRoot 'Dotnet-THIRD-PARTY-NOTICES.txt')
-$assets = Get-Content -LiteralPath (Join-Path $repoRoot 'FModel.Mcp/obj/project.assets.json') -Raw | ConvertFrom-Json
+$assets = Get-Content -LiteralPath (Join-Path (Get-ServerProjectDir $repoRoot) 'obj/project.assets.json') -Raw | ConvertFrom-Json
 $lines = [Collections.Generic.List[string]]::new()
 $lines.Add('# Third-party dependencies')
 $lines.Add('')

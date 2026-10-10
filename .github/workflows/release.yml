@@ -18,7 +18,8 @@ jobs:
       - name: Verify version matches tag
         shell: pwsh
         run: |
-          $version = ([xml](Get-Content FModel.Mcp/FModel.Mcp.csproj -Raw)).Project.PropertyGroup.Version
+          . ./scripts/Common.ps1
+          $version = Get-ProjectVersion (Get-Location).Path
           if ($env:GITHUB_REF_NAME -ne "v$version") { throw "Tag $env:GITHUB_REF_NAME does not match project version $version." }
       - name: Bootstrap CUE4Parse and build
         shell: pwsh

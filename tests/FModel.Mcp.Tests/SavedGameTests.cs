@@ -17,7 +17,7 @@ public sealed class SavedGameTests : IDisposable
     private static string Fixture(params string[] paths)
     {
         for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
-            if (File.Exists(Path.Combine(directory.FullName, "FModel.Mcp", "FModel.Mcp.csproj")))
+            if (File.Exists(Path.Combine(directory.FullName, "src", "FModel.Mcp", "FModel.Mcp.csproj")))
                 return Path.Combine([directory.FullName, "CUE4Parse", "CUE4Parse.Tests", "Fixtures", "UE5_8", .. paths]);
         throw new DirectoryNotFoundException();
     }

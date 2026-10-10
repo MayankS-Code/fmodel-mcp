@@ -12,18 +12,20 @@
 
 | Path | Contents |
 | --- | --- |
-| `FModel.Mcp/` | The MCP server: tools (`FModelTools.cs`), domain logic (`FModelService*.cs`), path policy, configuration |
-| `FModel.Mcp.Tests/` | xUnit v3 tests, run against CUE4Parse's UE5.8 fixtures |
-| `scripts/` | Build, test, publish, install and release scripts |
+| `src/FModel.Mcp/` | The MCP server: tools (`FModelTools.cs`), domain logic (`FModelService*.cs`), path policy, configuration |
+| `tests/FModel.Mcp.Tests/` | xUnit v3 tests, run against CUE4Parse's UE5.8 fixtures |
+| `scripts/` | Build, test, publish, install and release scripts. Project locations are defined once in `Common.ps1`. |
 | `docs/` | User and developer documentation |
 | `examples/` | Example server and client configurations |
+| `.github/` | CI and release workflows, issue and PR templates, Dependabot, contributing and security policy |
 | `CUE4Parse/` | Pinned CUE4Parse release, downloaded by the build (ignored by Git) |
+| `artifacts/` | Published packages and ZIPs (ignored by Git) |
 
 ## Build and test
 
 | Script | What it does |
 | --- | --- |
-| `setup.bat` | Everything below in order, plus prerequisite checks. The one-command path for new contributors. |
+| `scripts/Setup-Release.ps1` | Everything below in order, plus prerequisite checks. The one-command path for new contributors. `-InstallPrerequisites` offers a `winget` install of missing Git or .NET SDK. |
 | `scripts/Build-Mcp.ps1` | Downloads and verifies the pinned CUE4Parse release if needed, applies the integrations, restores packages into `.packages\` and builds Release. |
 | `scripts/Test-Mcp.ps1` | Builds and runs the 21 tests, then the stdio protocol smoke test. Run `Build-Mcp.ps1` first, since it skips restore. |
 | `scripts/Publish-Mcp.ps1` | Publishes a self-contained win-x64 package to a new `artifacts\fmodel-mcp-<version>-win-x64*` folder, generates license notices, smoke-tests it, and writes a ZIP and `.sha256`. Prints the package folder as its last output line. |
@@ -97,18 +99,17 @@ Integrations are applied to the downloaded source by `scripts/Initialize-Mcp.ps1
 4. Delete or move the existing `CUE4Parse\` folder, so the next build downloads the new release.
 5. Run `Build-Mcp.ps1` and `Test-Mcp.ps1`. If an integration anchor is missing, the bootstrap stops with
    `Unsupported CUE4Parse revision`; adjust that integration in `Initialize-Mcp.ps1`.
-6. Update the revision and hash in [DEPENDENCIES.md](../DEPENDENCIES.md), [NOTICE](../NOTICE) and
+6. Update the revision and hash in [Dependencies](dependencies.md), [NOTICE](../NOTICE) and
    [architecture.md](architecture.md#dependency-integration), and add a [CHANGELOG](../CHANGELOG.md) entry.
 
 ## Updating NuGet packages
 
 ```powershell
-./.dotnet/dotnet.exe list FModel.Mcp/FModel.Mcp.csproj package --outdated
-./.dotnet/dotnet.exe list FModel.Mcp.Tests/FModel.Mcp.Tests.csproj package --outdated
+./.dotnet/dotnet.exe list FModel.Mcp.slnx package --outdated
 ```
 
 (Use `dotnet` instead of `./.dotnet/dotnet.exe` when a .NET 10 SDK is installed system-wide.) Versions are
-pinned exactly. After updating, rebuild, rerun the tests, and update [DEPENDENCIES.md](../DEPENDENCIES.md).
+pinned exactly. After updating, rebuild, rerun the tests, and update [Dependencies](dependencies.md).
 
 ## Releasing
 

@@ -13,15 +13,15 @@ cd fmodel-mcp
 ./scripts/Test-Mcp.ps1
 ```
 
-The first build downloads the pinned CUE4Parse release. See [docs/development.md](docs/development.md)
-for all scripts, coding rules and how to update dependencies.
+The first build downloads the pinned CUE4Parse release. See [docs/development.md](../docs/development.md)
+for the repository layout, all scripts, coding rules and how to update dependencies.
 
 ## Pull requests
 
 - Keep changes focused, and describe what changed and how you tested it.
 - `Build-Mcp.ps1` and `Test-Mcp.ps1` must pass. CI runs them on every pull request.
 - For packaging or installer changes, also run `Publish-Mcp.ps1` and `Test-Installer.ps1`.
-- Update the documentation and [CHANGELOG.md](CHANGELOG.md) for user-visible changes.
+- Update the documentation and [CHANGELOG.md](../CHANGELOG.md) for user-visible changes.
 
 ## Never commit
 

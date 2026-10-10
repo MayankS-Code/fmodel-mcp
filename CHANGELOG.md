@@ -4,6 +4,7 @@
 
 - **Stable executable path:** the installer now maintains `current\FModel.Mcp.exe`, a junction to the newest version. Client configuration stays the same across updates; clients set up with 1.1.1 or earlier need their `command` changed once.
 - The server version is read from the project file instead of being hardcoded in two places.
+- Repository layout: sources in `src/`, tests in `tests/`, contributing and security policy in `.github/`, dependency notes in `docs/dependencies.md`. `setup.bat` is replaced by `scripts/Setup-Release.ps1`.
 - GitHub: structured bug and feature forms, private security reporting link, pull request checklist, and Dependabot for NuGet and Actions.
 
 - Pinned CUE4Parse to its latest release tag, `1.2.2.202610` (USMAP v5 support), and retained the MCP output-path safety integration.

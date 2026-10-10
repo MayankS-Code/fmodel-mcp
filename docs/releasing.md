@@ -6,7 +6,7 @@ version tag is pushed. Nothing is published from a developer machine.
 ## Versioning
 
 The project uses [semantic versioning](https://semver.org/). The version lives in one place,
-`<Version>` in `FModel.Mcp/FModel.Mcp.csproj`, and the tag must be `v` plus that version (`v1.2.0`).
+`<Version>` in `src/FModel.Mcp/FModel.Mcp.csproj`, and the tag must be `v` plus that version (`v1.2.0`).
 
 - **Patch** (`1.1.x`): fixes and dependency updates without behavior changes.
 - **Minor** (`1.x.0`): new tools, options or noticeable parser updates, such as a CUE4Parse release with
@@ -17,14 +17,14 @@ The project uses [semantic versioning](https://semver.org/). The version lives i
 ## Steps
 
 1. **Prepare the release on `main`.**
-   - Set `<Version>` in `FModel.Mcp/FModel.Mcp.csproj`.
+   - Set `<Version>` in `src/FModel.Mcp/FModel.Mcp.csproj`.
    - Add a `## <version>` section at the top of [CHANGELOG.md](../CHANGELOG.md). Its contents become the
      GitHub release notes, and the workflow fails if the section is missing.
-   - Update [DEPENDENCIES.md](../DEPENDENCIES.md) if dependencies changed.
+   - Update [Dependencies](dependencies.md) if dependencies changed.
 2. **Verify locally** on Windows x64:
 
    ```powershell
-   .\setup.bat
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Release.ps1
    ```
 
    This builds, runs the tests and protocol smoke test, publishes the package and tests the installer.

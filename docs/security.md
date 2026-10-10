@@ -54,7 +54,7 @@ warnings. Review them before deploying in a higher-risk environment.
 
 `Microsoft.Bcl.Memory` is raised to 10.0.12 inside CUE4Parse to replace a vulnerable transitive 9.0.0
 version ([GHSA-73j8-2gch-69rq](https://github.com/advisories/GHSA-73j8-2gch-69rq)). Full dependency
-details are in [DEPENDENCIES.md](../DEPENDENCIES.md).
+details are in [Dependencies](dependencies.md).
 
 ## Releases
 

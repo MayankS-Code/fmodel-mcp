@@ -22,7 +22,7 @@ if (!$OutputDirectory.StartsWith($artifactsRoot, [StringComparison]::OrdinalIgno
     throw "Publish output must stay under the repository artifacts directory: $artifactsRoot"
 }
 if (Test-Path -LiteralPath $OutputDirectory) { throw "Publish output already exists; preserving it. Choose a new -OutputDirectory: $OutputDirectory" }
-$project = Join-Path $repoRoot 'FModel.Mcp/FModel.Mcp.csproj'
+$project = Get-ServerProject $repoRoot
 $created = $false
 try {
     New-Item -ItemType Directory -Path $OutputDirectory | Out-Null
@@ -33,7 +33,7 @@ try {
     if (!(Test-Path -LiteralPath $executable -PathType Leaf)) { throw "Publish completed without the expected executable: $executable" }
 
     foreach ($name in @('Install-Mcp.ps1', 'Smoke-Mcp.ps1')) { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $OutputDirectory }
-    foreach ($name in @('README.md', 'LICENSE', 'NOTICE', 'CHANGELOG.md', 'DEPENDENCIES.md', 'SECURITY.md')) {
+    foreach ($name in @('README.md', 'LICENSE', 'NOTICE', 'CHANGELOG.md', '.github/SECURITY.md')) {
         Copy-Item -LiteralPath (Join-Path $repoRoot $name) -Destination $OutputDirectory
     }
     foreach ($name in @('docs', 'examples')) { Copy-Item -LiteralPath (Join-Path $repoRoot $name) -Destination $OutputDirectory -Recurse -Force }
