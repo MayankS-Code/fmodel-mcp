@@ -1,4 +1,8 @@
-param([string]$ServerPath, [string]$ConfigPath, [switch]$OpenSavedGame, [switch]$InspectWushu, [int]$ResponseTimeoutSeconds = 180)
+# Protocol smoke test over stdio using the 2025-11-25 initialize handshake (the unit tests cover 2026-07-28).
+# -OpenSavedGame mounts the configured FModel saved profile; -AssetQuery additionally finds and inspects one
+# .uasset matching the given name in that profile. Asset paths and values are never printed.
+param([string]$ServerPath, [string]$ConfigPath, [switch]$OpenSavedGame, [string]$AssetQuery, [int]$ResponseTimeoutSeconds = 180)
+if ($AssetQuery -and !$OpenSavedGame) { throw '-AssetQuery requires -OpenSavedGame.' }
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if (!$ServerPath) { $ServerPath = Join-Path $repoRoot 'FModel.Mcp/bin/Release/net10.0/FModel.Mcp.exe' }
@@ -56,17 +60,17 @@ try {
             $read = Send-Rpc @{ jsonrpc = '2.0'; id = 9; method = 'tools/call'; params = @{ name = 'fmodel_read_file'; arguments = @{ sessionId = $session.sessionId; path = $found.items[0].path; count = 512 } } }
             if ($read.isError) { throw 'Bounded read from a mounted file failed.' }
         }
-        if ($InspectWushu) {
-            $wushu = Send-Rpc @{ jsonrpc = '2.0'; id = 11; method = 'tools/call'; params = @{ name = 'fmodel_search_assets'; arguments = @{ sessionId = $session.sessionId; query = 'TP_Wushu_S0_MI'; limit = 10; offset = 0 } } }
-            if ($wushu.isError) { throw 'Wushu package search failed.' }
-            $wushuResult = $wushu.content[0].text | ConvertFrom-Json
-            $package = @($wushuResult.items | Where-Object { $_.extension -eq 'uasset' } | Select-Object -First 1)[0]
-            if (!$package) { throw 'Saved profile mounted successfully, but no Wushu material package was found.' }
+        if ($AssetQuery) {
+            $assetSearch = Send-Rpc @{ jsonrpc = '2.0'; id = 11; method = 'tools/call'; params = @{ name = 'fmodel_search_assets'; arguments = @{ sessionId = $session.sessionId; query = $AssetQuery; limit = 10; offset = 0 } } }
+            if ($assetSearch.isError) { throw 'Asset search failed.' }
+            $assetResult = $assetSearch.content[0].text | ConvertFrom-Json
+            $package = @($assetResult.items | Where-Object { $_.extension -eq 'uasset' } | Select-Object -First 1)[0]
+            if (!$package) { throw 'Saved profile mounted successfully, but no .uasset matched -AssetQuery.' }
             $inspection = Send-Rpc @{ jsonrpc = '2.0'; id = 12; method = 'tools/call'; params = @{ name = 'fmodel_inspect_package'; arguments = @{ sessionId = $session.sessionId; path = $package.path; section = 'summary'; offset = 0; limit = 20 } } }
-            if ($inspection.isError) { throw 'Wushu material package inspection failed.' }
+            if ($inspection.isError) { throw 'Package inspection failed.' }
             $properties = Send-Rpc @{ jsonrpc = '2.0'; id = 13; method = 'tools/call'; params = @{ name = 'fmodel_get_properties'; arguments = @{ sessionId = $session.sessionId; path = $package.path; exportIndex = 0; offset = 0; limit = 30 } } }
-            if ($properties.isError) { throw 'Wushu material property inspection failed.' }
-            Write-Host 'Wushu asset smoke passed: package search, package summary, and material property inspection returned successfully; asset paths and values suppressed.'
+            if ($properties.isError) { throw 'Property inspection failed.' }
+            Write-Host 'Asset smoke passed: package search, package summary, and property inspection returned successfully; asset paths and values suppressed.'
         }
         $closed = Send-Rpc @{ jsonrpc = '2.0'; id = 10; method = 'tools/call'; params = @{ name = 'fmodel_close_game'; arguments = @{ sessionId = $session.sessionId } } }
         if ($closed.isError) { throw ($closed.content[0].text) }

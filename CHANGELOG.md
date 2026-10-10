@@ -2,8 +2,12 @@
 
 ## 1.1.2
 
-- Updated the pinned CUE4Parse source to the USMAP v5-capable upstream revision and retained the MCP output-path safety integration.
-- Updated the .NET hosting and test dependencies; migrated the test project to the maintained xUnit v3 line.
+- Pinned CUE4Parse to its latest release tag, `1.2.2.202610` (USMAP v5 support), and retained the MCP output-path safety integration.
+- Fixed a clean-checkout bootstrap failure: the `Microsoft.Bcl.Memory` integration step now inserts the package version instead of replacing a line that does not exist upstream.
+- Verified MCP protocol 2026-07-28 with the official C# SDK client in the test suite; the stdio smoke test continues to cover 2025-11-25 clients.
+- Updated the .NET hosting and test dependencies; migrated the test project to the maintained xUnit v3 line (4.0.2).
+- Replaced the game-specific smoke check with a generic `-AssetQuery` option.
+- Fixed the release workflow: it now runs tests, publishes the Windows package, verifies the installer and uses only the current version's changelog section as release notes. CI no longer hardcodes the version.
 - Added repeatable build, test, publish, and Windows setup entry points with side-by-side release outputs.
 - Expanded dependency, installation, troubleshooting, and security documentation.
 

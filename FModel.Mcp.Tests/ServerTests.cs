@@ -241,6 +241,8 @@ public sealed class ServerTests : IAsyncLifetime
         var transport = new StdioClientTransport(new() { Command = "dotnet", Arguments = [dll, "--config", config], Name = "FModel test" });
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
         await using var client = await McpClient.CreateAsync(transport, cancellationToken: timeout.Token);
+        // The official SDK client negotiates the newest revision; Smoke-Mcp.ps1 covers the 2025-11-25 initialize handshake.
+        Assert.Equal("2026-07-28", client.NegotiatedProtocolVersion);
         var tools = await client.ListToolsAsync(cancellationToken: timeout.Token);
         Assert.Equal(34, tools.Count);
         Assert.Equal(tools.Count, tools.Select(t => t.Name).Distinct().Count());
