@@ -82,8 +82,8 @@ stay out of model-facing responses. Cache mapping selection is automatic only fo
 ambiguous builds require an explicit choice. Unsaved UI selections are outside this integration.
 
 The parser is bootstrapped into the ignored `CUE4Parse/` directory. Bootstrap uses upstream revision
-`ed9897a1a3a8dba84a4b6d2119846e0502d74f19` with ZIP SHA-256
-`BE5FAC2BE22E56470D1EEA26267DAA6AEA54D176096F6EDCFE558E839FC2CBC1`.
+release tag `1.2.2.202610` (commit `1e3293d4b3ecaf6ef3d73641b9ffe47fa4cf1562`) with ZIP SHA-256
+`528B6EFD3686172B96FD50E731F001184F19AACE0B94B07C4D6C64AF0306B70F`.
 It preserves existing source and fails if the expected integration points are absent.
 
 Two integration changes are deliberately small and reproduced by `scripts/Initialize-Mcp.ps1`:
