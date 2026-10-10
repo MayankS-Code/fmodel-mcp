@@ -1,7 +1,7 @@
 # FModel MCP
 
-[![Build and test](https://github.com/plu1337/fmodel-mcp/actions/workflows/build.yml/badge.svg)](https://github.com/plu1337/fmodel-mcp/actions/workflows/build.yml)
-[![Latest release](https://img.shields.io/github/v/release/plu1337/fmodel-mcp)](https://github.com/plu1337/fmodel-mcp/releases/latest)
+[![Build and test](https://github.com/MayankS-Code/fmodel-mcp/actions/workflows/build.yml/badge.svg)](https://github.com/MayankS-Code/fmodel-mcp/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/MayankS-Code/fmodel-mcp)](https://github.com/MayankS-Code/fmodel-mcp/releases/latest)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
 A local [Model Context Protocol](https://modelcontextprotocol.io/) server that lets AI assistants explore
@@ -16,7 +16,7 @@ VS Code, Cursor and Codex. Game archives are only read, never modified.
 ## Quick start
 
 1. Download `fmodel-mcp-<version>-win-x64.zip` from the
-   [latest release](https://github.com/plu1337/fmodel-mcp/releases/latest) and extract it. The package
+   [latest release](https://github.com/MayankS-Code/fmodel-mcp/releases/latest) and extract it. The package
    bundles the .NET runtime, so nothing else needs to be installed.
 2. In the extracted folder, run:
 

@@ -152,7 +152,7 @@ Write-Host "  args:    --config $configPath"
 Write-Host 'This path stays the same across updates; after future updates, just restart your MCP client.'
 if ($SkipRegistration) {
     Write-Host 'On first install, add this server to your MCP client, then restart the client.'
-    Write-Host 'Client setup guide: https://github.com/plu1337/fmodel-mcp/blob/main/docs/installation.md#connect-your-mcp-client'
+    Write-Host 'Client setup guide: https://github.com/MayankS-Code/fmodel-mcp/blob/main/docs/installation.md#connect-your-mcp-client'
 } else {
     Write-Host 'Registered with Codex. Restart the fmodel server in Codex, or restart the app, to load its tools.'
     Write-Host 'To remove the registration: codex mcp remove fmodel. Installed files and exports are retained.'

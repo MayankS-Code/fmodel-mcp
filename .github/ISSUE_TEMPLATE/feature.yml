@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Some features are intentionally out of scope (see [Not supported](https://github.com/plu1337/fmodel-mcp/blob/main/docs/tools.md#not-supported)),
+        Some features are intentionally out of scope (see [Not supported](https://github.com/MayankS-Code/fmodel-mcp/blob/main/docs/tools.md#not-supported)),
         including game modification, remote key downloads and shell access.
   - type: textarea
     id: goal

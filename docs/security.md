@@ -71,8 +71,8 @@ online services.
 ## Reporting
 
 Report vulnerabilities privately through
-[GitHub private vulnerability reporting](https://github.com/plu1337/fmodel-mcp/security/advisories/new).
+[GitHub private vulnerability reporting](https://github.com/MayankS-Code/fmodel-mcp/security/advisories/new).
 Do not post exploit details, keys or game archives in public issues.
 
-For ordinary bugs, open a [public issue](https://github.com/plu1337/fmodel-mcp/issues) with a sanitized
+For ordinary bugs, open a [public issue](https://github.com/MayankS-Code/fmodel-mcp/issues) with a sanitized
 error message, the game profile, the archive format and steps to reproduce.
