@@ -1,0 +1,15 @@
+{
+  "inputRoots": [
+    "C:/Users/<you>/AppData/Local/FModelMcp/Inputs",
+    "D:/Games/MyGame/MyGame/Content/Paks",
+    "C:/Users/<you>/Documents/FModel/Output/.data/mappings"
+  ],
+  "outputRoot": "C:/Users/<you>/AppData/Local/FModelMcp/Exports",
+  "oodleLibrary": "C:/Users/<you>/Documents/FModel/Output/.data/oodle-data-shared.dll",
+  "fmodelSettingsPath": "C:/Users/<you>/AppData/Roaming/FModel/AppSettings.json",
+  "maxSessions": 4,
+  "maxJobs": 32,
+  "maxBatchAssets": 500,
+  "maxReadBytes": 268435456,
+  "maxResponseChars": 100000
+}

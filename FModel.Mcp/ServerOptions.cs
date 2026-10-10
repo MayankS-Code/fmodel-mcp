@@ -18,7 +18,7 @@ public sealed class ServerOptions
     {
         if (args is ["--help"] or ["-h"])
         {
-            Console.Error.WriteLine("FModel.Mcp [--config <absolute-json-path>]\nLocal stdio MCP server. See docs/mcp.md for setup and commands.");
+            Console.Error.WriteLine("FModel.Mcp [--config <absolute-json-path>]\nLocal stdio MCP server. See docs/configuration.md and docs/tools.md (included in the package and on GitHub).");
             return null;
         }
         if (args.Length != 0 && !(args.Length == 2 && args[0] == "--config"))
@@ -38,7 +38,7 @@ public sealed class ServerOptions
         if (options.FModelSettingsPath is not null) options.FModelSettingsPath = Path.GetFullPath(options.FModelSettingsPath, basePath);
         if (options.MaxSessions is < 1 or > 16 || options.MaxJobs is < 1 or > 1000 || options.MaxBatchAssets is < 1 or > 10000 ||
             options.MaxReadBytes is < 1024 or > 2147483647 || options.MaxResponseChars is < 1024 or > 1_000_000)
-            throw new ArgumentException("Invalid server limits; see docs/mcp.md.");
+            throw new ArgumentException("Invalid server limits; see docs/configuration.md for allowed ranges.");
         return options;
     }
 }

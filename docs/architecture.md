@@ -1,4 +1,4 @@
-# FModel MCP design and feature coverage
+# Architecture and feature coverage
 
 ## Purpose and architecture
 
@@ -53,7 +53,7 @@ resources and prompts. Logs are isolated from protocol stdout.
 | Desktop-specific tools, live providers, creators | Advertised as unavailable | No fake success or stub tools |
 
 All 34 tools are implemented; the unavailable features above are not placeholder tool registrations.
-The command-by-command parameter reference and AI workflow examples are in [mcp.md](mcp.md).
+The command-by-command parameter reference and AI workflow examples are in [tools.md](tools.md).
 
 ## State, scale, and failure behavior
 

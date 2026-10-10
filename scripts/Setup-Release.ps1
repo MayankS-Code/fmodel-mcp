@@ -43,9 +43,8 @@ $publishOutput = Get-UniquePath $publishOutput
 $exe = Join-Path $publishOutput 'FModel.Mcp.exe'
 Write-Host ''
 Write-Host 'Release verification completed.'
-Write-Host "Executable: $exe"
-Write-Host 'Codex MCP server entry (replace the example install/config paths with your chosen local paths):'
-Write-Host '[mcp_servers.fmodel]'
-Write-Host ('command = ''' + $exe + '''')
-Write-Host "args = ['--config', 'C:\Users\<you>\AppData\Local\FModelMcp\config.json']"
-Write-Host 'The published app is self-contained for Windows x64 and bundles the .NET runtime.'
+Write-Host "Package: $publishOutput"
+Write-Host 'Install it with:'
+Write-Host "  powershell -NoProfile -ExecutionPolicy Bypass -File `"$(Join-Path $publishOutput 'Install-Mcp.ps1')`" -SkipRegistration"
+Write-Host 'The installer writes mcp-client.json with the command and arguments for your MCP client.'
+Write-Host 'Client setup guide: docs/installation.md#connect-your-mcp-client'

@@ -80,7 +80,7 @@ public sealed class ServerTests : IAsyncLifetime
         Assert.Equal("completed", (string)final["state"]!);
         var results = Data(await _tools.JobResults(jobId));
         var output = (string)results["results"]!["items"]![0]!["files"]![0]!;
-        Assert.Contains("CulturesToStage", await File.ReadAllTextAsync(output));
+        Assert.Contains("CulturesToStage", await File.ReadAllTextAsync(output, TestContext.Current.CancellationToken));
         var manifest = Data(await _tools.ReadOutput(jobId));
         Assert.Contains("manifest", manifest["path"]!.ToString());
         Assert.True((await _tools.ReadOutput(jobId, "../../escape.txt")).IsError);
@@ -235,7 +235,7 @@ public sealed class ServerTests : IAsyncLifetime
     public async Task OfficialMcpClientDiscoversToolsResourcesPromptsAndCallsServer()
     {
         var config = Path.Combine(_temp, "config.json");
-        await File.WriteAllTextAsync(config, JsonConvert.SerializeObject(new ServerOptions { InputRoots = [Fixture()], OutputRoot = Path.Combine(_temp, "stdio-output") }));
+        await File.WriteAllTextAsync(config, JsonConvert.SerializeObject(new ServerOptions { InputRoots = [Fixture()], OutputRoot = Path.Combine(_temp, "stdio-output") }), TestContext.Current.CancellationToken);
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent!.Name;
         var dll = Path.Combine(_repo, "FModel.Mcp", "bin", configuration, "net10.0", "FModel.Mcp.dll");
         var transport = new StdioClientTransport(new() { Command = "dotnet", Arguments = [dll, "--config", config], Name = "FModel test" });
@@ -266,7 +266,7 @@ public sealed class ServerTests : IAsyncLifetime
     {
         var directory = CopyIoStore("Tagged");
         var config = Path.Combine(_temp, "preview-config.json");
-        await File.WriteAllTextAsync(config, JsonConvert.SerializeObject(new ServerOptions { InputRoots = [_temp], OutputRoot = Path.Combine(_temp, "preview-output") }));
+        await File.WriteAllTextAsync(config, JsonConvert.SerializeObject(new ServerOptions { InputRoots = [_temp], OutputRoot = Path.Combine(_temp, "preview-output") }), TestContext.Current.CancellationToken);
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent!.Name;
         var dll = Path.Combine(_repo, "FModel.Mcp", "bin", configuration, "net10.0", "FModel.Mcp.dll");
         var transport = new StdioClientTransport(new() { Command = "dotnet", Arguments = [dll, "--config", config], Name = "FModel preview test" });

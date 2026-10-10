@@ -133,5 +133,13 @@ if (!$SkipRegistration) {
 }
 Write-Host "Installed FModel MCP $version at $destination"
 Write-Host "Game folders and export settings: $configPath"
-Write-Host 'Restart the fmodel server in Settings > MCP servers, or restart the desktop app, to load its tools.'
-Write-Host 'To uninstall the registration: codex mcp remove fmodel. Installed files and exports are retained.'
+Write-Host "MCP client configuration: $(Join-Path $InstallRoot 'mcp-client.json')"
+Write-Host "  command: $executable"
+Write-Host "  args:    --config $configPath"
+if ($SkipRegistration) {
+    Write-Host 'Add this server to your MCP client (or update its path after an upgrade), then restart the client.'
+    Write-Host 'Client setup guide: https://github.com/plu1337/fmodel-mcp/blob/main/docs/installation.md#connect-your-mcp-client'
+} else {
+    Write-Host 'Registered with Codex. Restart the fmodel server in Codex, or restart the app, to load its tools.'
+    Write-Host 'To remove the registration: codex mcp remove fmodel. Installed files and exports are retained.'
+}

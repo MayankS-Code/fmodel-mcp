@@ -1,7 +1,8 @@
 {
   "mcpServers": {
     "fmodel": {
-      "command": "C:/Tools/FModelMcp/FModel.Mcp.exe",
+      "type": "stdio",
+      "command": "C:/Users/<you>/AppData/Local/FModelMcp/versions/<version>-<id>/FModel.Mcp.exe",
       "args": ["--config", "C:/Users/<you>/AppData/Local/FModelMcp/config.json"]
     }
   }
