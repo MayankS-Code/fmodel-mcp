@@ -9,7 +9,9 @@
 - Replaced the game-specific smoke check with a generic `-AssetQuery` option.
 - Fixed the release workflow: it now runs tests, publishes the Windows package, verifies the installer and uses only the current version's changelog section as release notes. CI no longer hardcodes the version.
 - Added repeatable build, test, publish, and Windows setup entry points with side-by-side release outputs.
-- Expanded dependency, installation, troubleshooting, and security documentation.
+- Restructured documentation: a short README with guides in `docs/` (installation, configuration, tool reference, troubleshooting, security, development, releasing, architecture), and configuration templates for Claude Desktop, Claude Code, VS Code, Cursor and Codex in `examples/`.
+- The installer now prints the exact client command and arguments and links to setup instructions for any MCP client, instead of Codex-only guidance.
+- Added a documentation link check to CI.
 
 ## 1.1.1
 

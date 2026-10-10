@@ -1,0 +1,14 @@
+{
+  "inputRoots": [
+    "D:/Games/MyGame/MyGame/Content/Paks",
+    "D:/Unreal/Mappings"
+  ],
+  "outputRoot": "D:/Unreal/Exports",
+  "oodleLibrary": null,
+  "fmodelSettingsPath": null,
+  "maxSessions": 4,
+  "maxJobs": 32,
+  "maxBatchAssets": 500,
+  "maxReadBytes": 268435456,
+  "maxResponseChars": 100000
+}

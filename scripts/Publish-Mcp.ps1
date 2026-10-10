@@ -33,7 +33,7 @@ try {
     if (!(Test-Path -LiteralPath $executable -PathType Leaf)) { throw "Publish completed without the expected executable: $executable" }
 
     foreach ($name in @('Install-Mcp.ps1', 'Smoke-Mcp.ps1')) { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $OutputDirectory }
-    foreach ($name in @('README.md', 'LICENSE', 'NOTICE', 'CHANGELOG.md', 'DEPENDENCIES.md', 'RELEASE_CHECKLIST.md')) {
+    foreach ($name in @('README.md', 'LICENSE', 'NOTICE', 'CHANGELOG.md', 'DEPENDENCIES.md', 'SECURITY.md')) {
         Copy-Item -LiteralPath (Join-Path $repoRoot $name) -Destination $OutputDirectory
     }
     foreach ($name in @('docs', 'examples')) { Copy-Item -LiteralPath (Join-Path $repoRoot $name) -Destination $OutputDirectory -Recurse -Force }

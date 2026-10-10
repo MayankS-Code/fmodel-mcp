@@ -2,7 +2,7 @@ FModel MCP
 Copyright 2026 FModel MCP contributors
 
 An independent community project inspired by FModel (https://github.com/4sval/FModel).
-Not affiliated with or endorsed by FModel, CUE4Parse, Epic Games, or OpenAI.
+Not affiliated with or endorsed by Epic Games, the FModel project, or CUE4Parse.
 
 FModel: Copyright FModel contributors, GPL-3.0.
 CUE4Parse: Copyright CUE4Parse contributors, Apache-2.0.
@@ -11,7 +11,8 @@ Source: https://github.com/FabianFG/CUE4Parse
 
 CUE4Parse integrations are applied by scripts/Initialize-Mcp.ps1:
 - An output-path validator callback protects automatically queued exports.
-- Microsoft.Bcl.Memory is directly pinned to version 10.0.10.
+- Microsoft.Bcl.Memory is added at version 10.0.12, and System.IO.Hashing and
+  System.Numerics.Tensors are raised to 10.0.12.
 
 Binary releases include CUE4Parse's LICENSE and NOTICE under licenses/, a generated
 THIRD-PARTY-NOTICES.md, package license files, and .NET runtime notices.

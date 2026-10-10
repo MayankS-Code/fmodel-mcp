@@ -1,34 +1,34 @@
 # Contributing
 
-Use Windows x64, .NET 10 SDK, PowerShell 7 and Git. Clone the repository and run
-`./scripts/Build-Mcp.ps1` once to initialize the pinned parser dependency and run the full checks.
+Thanks for helping improve FModel MCP.
 
-## Development loop
+## Getting started
+
+On Windows x64 with Git and the .NET 10 SDK installed:
 
 ```powershell
-dotnet test FModel.Mcp.Tests/FModel.Mcp.Tests.csproj --no-restore -c Release -p:CUE4PARSE_SKIP_NATIVE=true -m:1 -nr:false
-./scripts/Build-Mcp.ps1 -SkipTests
-./scripts/Test-Installer.ps1
+git clone https://github.com/plu1337/fmodel-mcp.git
+cd fmodel-mcp
+./scripts/Build-Mcp.ps1
+./scripts/Test-Mcp.ps1
 ```
 
-The test suite uses upstream fixtures plus a generated encrypted-index PAK. Avoid committing game
-content, local configuration, key material, build products or the bootstrapped `CUE4Parse/` tree.
-Describe any profile/codec requirement in an issue or pull request without attaching copyrighted assets.
+The first build downloads the pinned CUE4Parse release. See [docs/development.md](docs/development.md)
+for all scripts, coding rules and how to update dependencies.
 
-Keep stdout exclusively for MCP JSON-RPC. Diagnostics belong on stderr. Add tool guidance for any new
-model-facing capability, and update the tool catalog, protocol discovery checks and support matrix.
-Prefer bounded responses, explicit file selections and session-scoped work. Do not add a shell-execution
-tool or automatic downloads of keys or native libraries.
+## Pull requests
 
-## Dependency updates
+- Keep changes focused, and describe what changed and how you tested it.
+- `Build-Mcp.ps1` and `Test-Mcp.ps1` must pass. CI runs them on every pull request.
+- For packaging or installer changes, also run `Publish-Mcp.ps1` and `Test-Installer.ps1`.
+- Update the documentation and [CHANGELOG.md](CHANGELOG.md) for user-visible changes.
 
-Change the revision and ZIP hash in `scripts/Initialize-Mcp.ps1`, review its small source integrations,
-and update `NOTICE` and the design guide. Build in a fresh checkout and rerun the fixture and protocol
-checks. Review the resolved package/license inventory produced by the build.
+## Never commit
 
-## Releases
+Game files, AES keys, mappings, FModel profiles, machine-specific paths or build output. Describe
+game-specific problems in words or with synthetic files instead of attaching copyrighted assets.
 
-Update the version in the server project, changelog and README download examples. Push a `vX.Y.Z` tag
-whose version matches the project. The release workflow builds and tests Windows x64, checks the
-installer, and uploads binary/source ZIPs and their checksums to a GitHub release. Releases are unsigned.
-Never put game data, credentials or machine-local paths in release notes or artifacts.
+## Reporting bugs and security issues
+
+Use the [issue templates](https://github.com/plu1337/fmodel-mcp/issues/new/choose) for bugs and feature
+requests. Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
