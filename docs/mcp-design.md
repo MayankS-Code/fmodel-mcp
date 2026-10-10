@@ -82,8 +82,8 @@ stay out of model-facing responses. Cache mapping selection is automatic only fo
 ambiguous builds require an explicit choice. Unsaved UI selections are outside this integration.
 
 The parser is bootstrapped into the ignored `CUE4Parse/` directory. Bootstrap uses upstream revision
-`2bcceaf7bf129e4a52bc36d0a174dd3efb5fbfe0` with ZIP SHA-256
-`B93A68CE9E88027DD5C2E9DDF72C9A56112B4E92DF56885DC7C9570CC2A1FA0F`.
+`ed9897a1a3a8dba84a4b6d2119846e0502d74f19` with ZIP SHA-256
+`BE5FAC2BE22E56470D1EEA26267DAA6AEA54D176096F6EDCFE558E839FC2CBC1`.
 It preserves existing source and fails if the expected integration points are absent.
 
 Two integration changes are deliberately small and reproduced by `scripts/Initialize-Mcp.ps1`:
@@ -91,8 +91,10 @@ Two integration changes are deliberately small and reproduced by `scripts/Initia
 1. `ExportSession.OutputPathValidator`: an optional callback applied before directory creation to every
    conversion output, including automatically queued dependencies. FModel's desktop behavior is unchanged
    when the callback is absent. The MCP server checks path containment, invalid/device names and links.
-2. Direct `Microsoft.Bcl.Memory` 10.0.10 dependency: replaces the vulnerable transitive 9.0.0 version
-   discovered during restore. See the [.NET advisory](https://github.com/advisories/GHSA-73j8-2gch-69rq).
+2. Direct `Microsoft.Bcl.Memory` 10.0.12 dependency (added to CUE4Parse's central package versions and
+   project references): replaces the vulnerable transitive 9.0.0 version discovered during restore. See the
+   [.NET advisory](https://github.com/advisories/GHSA-73j8-2gch-69rq). `System.IO.Hashing` and
+   `System.Numerics.Tensors` are raised to the same 10.0.12 servicing level.
 
 MCP uses the official [C# SDK](https://github.com/modelcontextprotocol/csharp-sdk) NuGet package 2.2.0 and
 its [stdio hosting pattern](https://github.com/modelcontextprotocol/csharp-sdk/blob/main/docs/concepts/getting-started.md).

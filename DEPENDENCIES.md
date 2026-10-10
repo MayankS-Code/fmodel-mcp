@@ -11,7 +11,7 @@ This project is FModel MCP 1.1.2. Versions below are pinned; no floating package
 
 ## Unreal parsing
 
-- CUE4Parse source revision: `06a23e83060fb6c168243318c72bb2080b5c4d82`, downloaded from the official `FabianFG/CUE4Parse` repository archive. `scripts/Initialize-Mcp.ps1` verifies SHA-256 `07E2D6BF79BED53F7472D5A8D891AC5F0B5361F8473913F284B933E05D2BE160` before using it.
+- CUE4Parse source revision: `ed9897a1a3a8dba84a4b6d2119846e0502d74f19` (upstream `master`, 2026-10-09), downloaded from the official `FabianFG/CUE4Parse` repository archive. `scripts/Initialize-Mcp.ps1` verifies SHA-256 `BE5FAC2BE22E56470D1EEA26267DAA6AEA54D176096F6EDCFE558E839FC2CBC1` before using it.
 - The pinned `EUsmapVersion` defines `EngineVersioning` as value 5 and `Latest` as 5. `UsmapParser` reads the engine version for mappings at that version, proceeds into the mapping tables, and validates subsequent data. This is parser evidence, not a promise that every game mapping is compatible. The pin was selected because it includes USMAP v5 parsing and has been exercised with the MCP implementation.
 - The source integration adds output-path validation hooks used by the host and pins CUE4Parse's direct `Microsoft.Bcl.Memory`, `System.IO.Hashing`, and `System.Numerics.Tensors` dependencies to 10.0.12. These changes are applied idempotently to the verified source revision; unrelated upstream files are retained.
 - NuGet's stable CUE4Parse package observed during this release audit was `1.2.2.202610`. It is not substituted for the source pin: the source revision is newer and includes the host integration point required to validate all conversion outputs. Upstream package and source are separate artifacts and are not assumed interchangeable.
