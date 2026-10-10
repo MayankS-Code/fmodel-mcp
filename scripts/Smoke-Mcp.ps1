@@ -1,7 +1,7 @@
-param([string]$ServerPath, [string]$ConfigPath, [switch]$OpenSavedGame, [int]$ResponseTimeoutSeconds = 180)
+param([string]$ServerPath, [string]$ConfigPath, [switch]$OpenSavedGame, [switch]$InspectWushu, [int]$ResponseTimeoutSeconds = 180)
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-if (!$ServerPath) { $ServerPath = Join-Path $repoRoot 'artifacts/fmodel-mcp/FModel.Mcp.exe' }
+if (!$ServerPath) { $ServerPath = Join-Path $repoRoot 'FModel.Mcp/bin/Release/net10.0/FModel.Mcp.exe' }
 $info = [Diagnostics.ProcessStartInfo]::new()
 $info.FileName = [IO.Path]::GetFullPath($ServerPath)
 if ($ConfigPath) { $info.Arguments = '--config "' + [IO.Path]::GetFullPath($ConfigPath) + '"' }
@@ -24,7 +24,8 @@ function Send-Rpc([hashtable]$Message) {
         if ($null -eq $line.Result) { throw "MCP stdout closed unexpectedly: $($errors.GetAwaiter().GetResult())" }
         $response = $line.Result | ConvertFrom-Json
         if ($response.id -eq $Message.id) {
-            if ($response.error) { throw ($response.error | ConvertTo-Json -Compress) }
+            $errorProperty = $response.PSObject.Properties['error']
+            if ($errorProperty -and $errorProperty.Value) { throw ($errorProperty.Value | ConvertTo-Json -Compress) }
             return $response.result
         }
     }
@@ -42,24 +43,34 @@ try {
     if ($resources.resources.Count -lt 2 -or $prompts.prompts.Count -ne 4) { throw 'Missing resources or prompts.' }
     if ($OpenSavedGame) {
         $saved = Send-Rpc @{ jsonrpc = '2.0'; id = 6; method = 'tools/call'; params = @{ name = 'fmodel_list_saved_games'; arguments = @{} } }
-        if ($saved.isError) { throw ($saved.content[0].text) }
-        Write-Host $saved.content[0].text
+        if ($saved.isError) { throw 'Saved-game listing failed; details suppressed to avoid printing local profile paths.' }
+        $savedGames = $saved.content[0].text | ConvertFrom-Json
         $opened = Send-Rpc @{ jsonrpc = '2.0'; id = 7; method = 'tools/call'; params = @{ name = 'fmodel_open_saved_game'; arguments = @{} } }
-        if ($opened.isError) { throw ($opened.content[0].text) }
+        if ($opened.isError) { throw 'Opening the saved profile failed; details suppressed to avoid printing local profile information.' }
         $session = $opened.content[0].text | ConvertFrom-Json
-        Write-Host $opened.content[0].text
         if ($session.fileCount -lt 1) { throw 'Saved game mounted no files.' }
         $search = Send-Rpc @{ jsonrpc = '2.0'; id = 8; method = 'tools/call'; params = @{ name = 'fmodel_search_assets'; arguments = @{ sessionId = $session.sessionId; query = 'DefaultGame.ini'; limit = 1 } } }
-        if ($search.isError) { throw ($search.content[0].text) }
-        Write-Host $search.content[0].text
+        if ($search.isError) { throw 'Mounted-asset search failed.' }
         $found = $search.content[0].text | ConvertFrom-Json
         if ($found.items.Count -gt 0) {
             $read = Send-Rpc @{ jsonrpc = '2.0'; id = 9; method = 'tools/call'; params = @{ name = 'fmodel_read_file'; arguments = @{ sessionId = $session.sessionId; path = $found.items[0].path; count = 512 } } }
-            if ($read.isError) { throw ($read.content[0].text) }
-            Write-Host 'Verified reading and decompressing a mounted configuration file.'
+            if ($read.isError) { throw 'Bounded read from a mounted file failed.' }
+        }
+        if ($InspectWushu) {
+            $wushu = Send-Rpc @{ jsonrpc = '2.0'; id = 11; method = 'tools/call'; params = @{ name = 'fmodel_search_assets'; arguments = @{ sessionId = $session.sessionId; query = 'TP_Wushu_S0_MI'; limit = 10; offset = 0 } } }
+            if ($wushu.isError) { throw 'Wushu package search failed.' }
+            $wushuResult = $wushu.content[0].text | ConvertFrom-Json
+            $package = @($wushuResult.items | Where-Object { $_.extension -eq 'uasset' } | Select-Object -First 1)[0]
+            if (!$package) { throw 'Saved profile mounted successfully, but no Wushu material package was found.' }
+            $inspection = Send-Rpc @{ jsonrpc = '2.0'; id = 12; method = 'tools/call'; params = @{ name = 'fmodel_inspect_package'; arguments = @{ sessionId = $session.sessionId; path = $package.path; section = 'summary'; offset = 0; limit = 20 } } }
+            if ($inspection.isError) { throw 'Wushu material package inspection failed.' }
+            $properties = Send-Rpc @{ jsonrpc = '2.0'; id = 13; method = 'tools/call'; params = @{ name = 'fmodel_get_properties'; arguments = @{ sessionId = $session.sessionId; path = $package.path; exportIndex = 0; offset = 0; limit = 30 } } }
+            if ($properties.isError) { throw 'Wushu material property inspection failed.' }
+            Write-Host 'Wushu asset smoke passed: package search, package summary, and material property inspection returned successfully; asset paths and values suppressed.'
         }
         $closed = Send-Rpc @{ jsonrpc = '2.0'; id = 10; method = 'tools/call'; params = @{ name = 'fmodel_close_game'; arguments = @{ sessionId = $session.sessionId } } }
         if ($closed.isError) { throw ($closed.content[0].text) }
+        Write-Host "Saved-profile smoke passed: $(@($savedGames).Count) saved profiles discovered; one profile mounted $($session.fileCount) files; bounded search/read completed. No profile paths or identifiers printed."
     }
     $process.StandardInput.Close()
     if (!$process.WaitForExit(10000)) { throw 'MCP process did not exit after stdin closed.' }

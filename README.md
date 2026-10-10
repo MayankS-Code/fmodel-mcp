@@ -1,154 +1,99 @@
-<div align="center">
-
 # FModel MCP
 
-**Explore Unreal Engine game assets with your AI assistant.**
+FModel MCP is a local [Model Context Protocol](https://modelcontextprotocol.io/) server for browsing Unreal Engine game assets through the FModel/CUE4Parse ecosystem. It serves stdio to clients such as Codex and provides asset discovery, metadata inspection, references, bounded raw reads, and supported export operations.
 
-[![Build](https://github.com/plu1337/fmodel-mcp/actions/workflows/build.yml/badge.svg)](https://github.com/plu1337/fmodel-mcp/actions/workflows/build.yml)
-[![Release](https://img.shields.io/github/v/release/plu1337/fmodel-mcp)](https://github.com/plu1337/fmodel-mcp/releases/latest)
-![Windows x64](https://img.shields.io/badge/platform-Windows_x64-0078D4)
-[![License: GPL v3](https://img.shields.io/badge/license-GPL_v3-blue)](LICENSE)
+This is a community project and is not affiliated with Riot Games, FModel, or CUE4Parse. It does not edit or repack game archives.
 
-[Download](https://github.com/plu1337/fmodel-mcp/releases/latest) · [Tool reference](docs/mcp.md) · [Architecture](docs/mcp-design.md) · [Report an issue](https://github.com/plu1337/fmodel-mcp/issues)
+## Verified capabilities
 
-</div>
+- Open mounted PAK/IoStore containers and loose files from configured input roots using a saved FModel profile, where the selected game mapping and required codecs are compatible.
+- List, search, and inspect packages, exports/imports, properties, references, registries, textures, meshes, animation, audio, localization, and supported binary configuration assets.
+- Read bounded byte ranges from logical assets such as `.ushaderbytecode`; this is asset access only, not shader decompilation or GPU shader reconstruction.
+- Export supported assets through a configured, path-validated output root. Exports are not enabled by setup until the user supplies their own local configuration.
+- MCP tools, resources, and prompts are discoverable over stdio. The release smoke test verifies protocol initialization and the 34-tool catalog.
 
-FModel MCP is a local Model Context Protocol server for Unreal Engine archives and assets. It uses
-the same [CUE4Parse](https://github.com/FabianFG/CUE4Parse) parsing and conversion libraries as
-[FModel](https://github.com/4sval/FModel), exposing **34 tools**, **four resources/resource templates**,
-and **four workflow prompts** to MCP clients. No running FModel window, GPU, or Unreal Editor is required.
+Actual parsing/export support depends on the selected UE/game profile, mapping, archive format, encryption key supplied locally, and codecs. See [tool reference](docs/mcp.md), [design/support matrix](docs/mcp-design.md), and [dependencies/security notes](DEPENDENCIES.md).
 
-This is an independent community project, unaffiliated with the FModel or CUE4Parse maintainers.
+## Requirements
 
-## What you can do
+- Windows x64.
+- To build: Git for the pinned CUE4Parse source and .NET 10 SDK. `global.json` requests SDK 10.0.100 and permits later .NET 10 feature bands.
+- To run the published package: self-contained for Windows x64 (bundles the required .NET runtime). Target systems do not require a separate .NET installation.
+- Access to game files and mappings is configured locally by the user. This repository does not include game content, mappings, profiles, or encryption keys.
 
-| Task | Available capabilities |
-| --- | --- |
-| Open archives | PAK, IoStore, loose assets, engine/game profiles, local mappings, in-memory AES keys |
-| Reuse FModel setup | Discover saved games and open the last saved selection with local keys, profile overrides and mappings |
-| Find assets | Directory browsing, paginated path search, asset registry queries, archive statistics |
-| Understand packages | Exports/imports/names, JSON properties and pointers, references, Blueprint pseudocode |
-| Examine content | Inline texture previews, localization, registry and binary configuration inspection |
-| Export assets | Raw files with sidecars, JSON, supported textures, meshes, skeletons, animations, materials, worlds and audio |
-| Manage work | Background batches, cancellation, progress, per-asset results, manifests and version comparisons |
+## Build and test
 
-Actual decoding and conversion depend on the selected game profile, mappings, encryption keys and
-available codecs. The [support matrix](docs/mcp-design.md) and [limitations](docs/mcp.md#limitations-and-non-goals)
-describe the boundaries. The server does not edit or repack game archives.
+From a clean clone, run `setup.bat`. It checks prerequisites, restores packages, builds Release, runs tests, publishes into a new versioned directory under `artifacts/`, performs an MCP stdio smoke test, and runs the isolated installer test. If Git or the SDK is missing, rerun `setup.bat -InstallPrerequisites`; it offers `winget` only when available and asks before installing. It never edits Codex configuration. Existing publish folders are preserved and a new suffixed output is chosen on repeat runs.
 
-## Install in Codex / ChatGPT desktop
-
-**Requires Windows x64.** Release ZIPs include .NET 10; you do not need to install the SDK or runtime.
-
-1. Download `fmodel-mcp-1.1.1-win-x64.zip` and its `.sha256` file from [Releases](https://github.com/plu1337/fmodel-mcp/releases/latest).
-2. Check the ZIP with `Get-FileHash .\fmodel-mcp-1.1.1-win-x64.zip -Algorithm SHA256` against the published checksum, then extract it to a folder.
-3. Open PowerShell in that extracted folder and run:
+Equivalent individual commands (PowerShell, repository-relative paths):
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\Install-Mcp.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mcp.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-Mcp.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Publish-Mcp.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-Installer.ps1 -PackagePath .\artifacts\fmodel-mcp-1.1.2-win-x64
 ```
 
-The installer copies the complete release to `%LOCALAPPDATA%\FModelMcp`, tests its MCP connection,
-and registers `fmodel` using the Codex CLI (including the CLI bundled with the desktop app).
-On a fresh install it detects FModel's saved selection, allows that game folder and its local mapping
-cache, and connects an existing cached Oodle library when available. Saved AES keys are read directly
-from FModel's settings when you open a saved game; they are never copied into the MCP configuration.
-An `Inputs` folder is also available for additional archives; exports go to a separate `Exports` folder.
-To allow an existing game folder instead, run the installer from PowerShell with:
+Each script resolves paths from its own location, so it can be called from another working directory. `Publish-Mcp.ps1 -OutputDirectory <new-path-under-artifacts>` allows a deliberate alternate destination. `Package-Source.ps1` produces a source archive; inspect its output path before distributing it. Tests use xUnit v3 with Microsoft Testing Platform; `global.json` configures the .NET 10 test runner accordingly.
+
+## Setup and Codex configuration
+
+1. Run `setup.bat` or extract the published ZIP to a stable directory.
+2. Run `Install-Mcp.ps1 -SkipRegistration` from the extracted folder. The installer creates a local `config.json`, an Inputs directory, and a generated client config without embedding keys. You can instead pass `-InputRoots`, `-OutputRoot`, and `-FModelSettingsPath` explicitly. Inspect the resulting config locally; do not publish it. A build from this checkout publishes as `artifacts/fmodel-mcp-1.1.2-win-x64/FModel.Mcp.exe` (the directory receives a numeric suffix if that path already exists).
+3. Add an entry to the Codex MCP configuration at a path you control. Example for a package installed at `C:\Tools\FModelMcp`:
+
+```toml
+[mcp_servers.fmodel]
+command = 'C:\Tools\FModelMcp\FModel.Mcp.exe'
+args = ['--config', 'C:\Users\<you>\AppData\Local\FModelMcp\config.json']
+```
+
+Use the exact executable and config paths created on your machine. This project’s scripts do not edit `config.toml`. Restart or refresh the MCP client after adding a server; tool discovery depends on the client.
+
+The alternative JSON client configuration generated by the installer contains the same executable and `--config` arguments. MCP communicates over standard input/output using JSON-RPC; diagnostics go to standard error.
+
+## Configure local game data
+
+FModel MCP can import the selected game folder and mapping directory from an existing FModel settings file when explicitly requested. For example:
 
 ```powershell
-.\Install-Mcp.ps1 -InputRoots 'D:\Games\MyGame\Content\Paks', 'D:\Mappings'
+.\Install-Mcp.ps1 -SkipRegistration -FModelSettingsPath 'D:\private\FModel\AppSettings.json'
 ```
 
-4. Restart `fmodel` in **Settings → MCP servers**, or restart the desktop app. Type `/mcp` to check it.
-5. Ask your assistant:
-
-> Use FModel to show its capabilities and the allowed input folders. Help me select the right engine profile, open my archives, and find texture assets.
-
-If you already use FModel, simply ask:
-
-> Open my saved FModel game and show me what's available.
-
-The assistant can call `fmodel_list_saved_games`, then `fmodel_open_saved_game` with no arguments to
-open the last saved selection. This reads saved settings; it does not inspect unsaved desktop state.
-When multiple cached mappings match, the assistant must select the correct game build explicitly.
-
-The [desktop app, CLI, and IDE extension share local MCP configuration](https://learn.chatgpt.com/docs/extend/mcp).
-ChatGPT web does not read this local configuration; this release is a local stdio server.
-
-### Configuration, updates and removal
-
-Edit `%LOCALAPPDATA%\FModelMcp\config.json` to change allowed `inputRoots`, `outputRoot`, limits,
-or the path to a locally supplied Oodle library. Restart the server after changes.
-Input directories must exist. Mapping files must be inside an allowed input root.
-
-Run the installer from a newer extracted release to update. Existing settings are preserved unless
-you pass replacement folder parameters, in which case the previous configuration is backed up.
-Versioned installation directories keep a running server from interrupting file copies.
-
-To connect an existing MCP installation to FModel, or refresh allowed folders after changing games, run
-`./Install-Mcp.ps1 -ImportFModel` from an extracted release. Use `-FModelSettingsPath` for an alternate
-settings file. Changes to saved keys/profile overrides are read on each saved-game open; changed access
-roots or codec paths require a server restart. Existing sessions keep their original profile.
-
-To remove the registration, run `codex mcp remove fmodel`, or remove it in the app's MCP settings.
-Then remove unwanted installation folders yourself; keep any inputs or exports you need.
-
-### Other MCP clients
-
-Run `Install-Mcp.ps1 -SkipRegistration` and use the generated
-`%LOCALAPPDATA%\FModelMcp\mcp-client.json`, or configure the executable directly:
-
-```json
-{
-  "mcpServers": {
-    "fmodel": {
-      "command": "C:/Tools/fmodel-mcp/FModel.Mcp.exe",
-      "args": ["--config", "C:/Tools/fmodel-mcp/config.json"]
-    }
-  }
-}
-```
-
-Keep all extracted files together. Use absolute paths and copy/edit the [example server configuration](examples/fmodel-mcp.config.json).
-Starting the executable manually waits for MCP input; that is expected.
+The installer imports paths only and deliberately does not copy AES keys into MCP configuration. Keep the saved profile, mapping, key material, and archive paths private. You can instead edit the local MCP `config.json` with approved `inputRoots`, `outputRoot`, and the FModel settings path. Do not paste secrets into chat or check them into Git.
 
 ## Example workflows
 
-| Ask your assistant | Tool sequence |
-| --- | --- |
-| “Find and preview the game's logo.” | capabilities → list_options → open_game → search_assets → inspect_package → preview_texture |
-| “Export these meshes as glTF.” | inspect_package → start_export → job_status → job_results |
-| “Explain this Blueprint's data and script.” | open_game with `readScriptData` → inspect_package → get_properties → decompile_blueprint |
-| “What changed between these two builds?” | open both builds → compare_sessions → inspect changed packages |
+Use the MCP tools in your client:
 
-All tool names begin with `fmodel_`. The server supplies model instructions and prompts that teach
-the sequence, pagination, profile selection, session cleanup and export-result checks. See the
-[full AI command plan and argument examples](docs/mcp.md#ai-command-plan).
+1. Call `fmodel_capabilities` and list saved games.
+2. Open the intended saved profile, then list directories or search by package/asset name.
+3. Inspect a package's exports, properties, references, and metadata before reading data.
+4. Use bounded `fmodel_read_file` calls for a small byte range; use supported export tools only when needed and direct output to a configured path.
+5. Close the game session when finished.
 
-## Build from source
+Tool names and schemas are documented in [docs/mcp.md](docs/mcp.md). Shader archive reading does not identify which compiled shader a material uses unless the asset metadata and runtime identifiers establish that relationship. No shader source recovery or bytecode decompilation is claimed.
 
-Install the **.NET 10 SDK** and **PowerShell 7**, then:
+## Troubleshooting
 
-```powershell
-git clone https://github.com/plu1337/fmodel-mcp.git
-cd fmodel-mcp
-./scripts/Build-Mcp.ps1
-```
+- **SDK missing / wrong major:** install .NET 10 SDK from [Microsoft](https://dotnet.microsoft.com/download/dotnet/10.0), reopen PowerShell, and rerun setup.
+- **NuGet restore fails:** check feed/network access and disk space, then rerun `Build-Mcp.ps1`. Do not disable package auditing for a release audit. The build uses a local `.packages` cache.
+- **`Usmap has invalid version (N)`:** the selected mapping may be newer than the parser or incompatible with the profile. This build includes a CUE4Parse parser with USMAP v5 support, but it cannot guarantee arbitrary mappings. Verify mapping provenance and profile version; do not replace the user's saved mapping automatically.
+- **Profile or path not found:** check local FModel settings, the game directory, mapping path, and configured input roots. Paths must be explicitly allowed. Never point output into a protected game archive directory.
+- **MCP server fails to start:** invoke the executable directly with `--config <path>` and inspect standard error. Ensure the config is valid JSON and all configured inputRoots exist and are accessible.
+- **Tools are missing after configuration:** refresh/restart the MCP client and verify the active server name and executable path. Server-side registration alone does not prove client invocation capability.
+- **FModel cannot mount an archive:** confirm its profile's engine version, mappings, key material, Oodle/runtime dependencies, and archive set. Errors may be game-specific.
 
-The script downloads a checksum-verified, pinned CUE4Parse source revision, applies the documented
-host integrations, restores NuGet packages, runs the tests, and creates a self-contained ZIP with
-notices and its SHA-256 checksum under `artifacts/`. The downloaded dependency and build products
-are ignored by Git. Optional upstream C++ codec compilation is skipped; see the [codec setup guide](docs/mcp.md#compression-and-native-libraries).
+## Security, legal use, and limitations
 
-Tests cover real PAK and IoStore fixtures, encrypted-index mounting, package inspection, texture
-preview, localization, exports, cancellation, path confinement, and the official MCP client protocol.
-See [CONTRIBUTING.md](CONTRIBUTING.md) for focused development commands.
+The server treats game assets as user-supplied local data and validates paths against configured roots. Do not use it to bypass anti-cheat, tamper with a live game, or interact with protected online services. Users are responsible for having rights to access and analyze their files and for complying with game/platform terms and applicable law. No game content, mappings, AES keys, or user profile is included.
 
-## License and credits
+The tool browses/reads supported asset data. It does not provide a general Unreal shader compiler/decompiler, decode arbitrary shader bytecode, reproduce runtime lighting, or guarantee that every game build can be opened. Some export types require additional codecs or game-specific metadata. These are limitations, not completed features.
 
-The server is distributed under [GPL-3.0](LICENSE). FModel inspired the workflow; CUE4Parse provides
-the parsing and conversion engine under Apache-2.0. Dependencies retain their own licenses.
-Release archives include generated third-party notices and bundled license files. Releases also
-include a source bundle with the pinned CUE4Parse source and the applied integrations.
-No game archives, mappings, AES keys, or proprietary Oodle DLLs are included in the runtime release.
+## Dependencies and license
+
+Pinned dependency details, CUE4Parse USMAP support evidence, licenses, and the known ImageSharp advisory are in [DEPENDENCIES.md](DEPENDENCIES.md). The existing project license is GPL-3.0-or-later; see [LICENSE](LICENSE) and bundled third-party notices. Report issues through the repository issue tracker without attaching game assets, keys, or private profiles.
+
+## Release verification
+
+See [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) for reproducible release checks. The setup builds and tests locally; it does not commit, tag, push, or publish a GitHub release.

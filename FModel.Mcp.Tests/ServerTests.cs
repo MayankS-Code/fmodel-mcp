@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using Xunit;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+[assembly: Xunit.v3.Parallelization(Mode = Xunit.Sdk.ParallelMode.None)]
 
 namespace FModel.Mcp.Tests;
 
@@ -20,15 +20,15 @@ public sealed class ServerTests : IAsyncLifetime
     private FModelTools _tools = null!;
     private string Fixture(params string[] paths) => Path.Combine([_repo, "CUE4Parse", "CUE4Parse.Tests", "Fixtures", "UE5_8", .. paths]);
 
-    public Task InitializeAsync()
+    public ValueTask InitializeAsync()
     {
         Directory.CreateDirectory(_temp);
         var options = new ServerOptions { InputRoots = [_temp, Fixture()], OutputRoot = Path.Combine(_temp, "output") };
         _service = new(options, new(options));
         _tools = new(_service, options);
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _service.DisposeAsync();
         // Only delete the exact uniquely-created test directory beneath the OS temp root.
