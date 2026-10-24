@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.13" />
     <!-- CUE4Parse git submodule (pinned release tag); scripts/Initialize-Mcp.ps1 applies host integrations. -->
     <ProjectReference Include="../../CUE4Parse/CUE4Parse-Conversion/CUE4Parse-Conversion.csproj" />
   </ItemGroup>
